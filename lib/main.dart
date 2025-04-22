@@ -1,5 +1,5 @@
+import 'package:expo_master/visitor/screens/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
 import 'config/theme.dart';
 
 void main() {

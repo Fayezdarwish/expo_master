@@ -1,5 +1,5 @@
+import 'package:expo_master/visitor/screens/register_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:expo_master/screens/register_screen.dart';
 import '../api/visitor_api.dart';
 
 class LoginScreen extends StatefulWidget {
