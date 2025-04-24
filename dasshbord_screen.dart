@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class welcom_screen extends StatelessWidget {
-  const welcom_screen({super.key});
+class WelcomScreen extends StatelessWidget {
+  const WelcomScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -9,7 +9,7 @@ class welcom_screen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('wlcom to expo master'),
+        title: const Text('مرحبًا بك في Expo Master'),
         centerTitle: true,
       ),
       body: Padding(
@@ -17,22 +17,36 @@ class welcom_screen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: () {
               },
-              child: const Text('أنشاء معرض'),
+              icon: const Icon(Icons.add_business),
+              label: Text(
+                'إنشاء معرض',
+                style: textTheme.bodyMedium,
+              ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
+
+            ElevatedButton.icon(
               onPressed: () {
               },
-              child: const Text('أدارة معرض'),
+              icon: const Icon(Icons.manage_accounts),
+              label: Text(
+                'إدارة معرض',
+                style: textTheme.bodyMedium,
+              ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
+
+            ElevatedButton.icon(
               onPressed: () {
               },
-              child: const Text('عرض التقارير'),
+              icon: const Icon(Icons.bar_chart),
+              label: Text(
+                'عرض التقارير',
+                style: textTheme.bodyMedium,
+              ),
             ),
           ],
         ),
