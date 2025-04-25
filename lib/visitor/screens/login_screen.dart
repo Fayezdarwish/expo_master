@@ -1,10 +1,15 @@
 import 'package:expo_master/visitor/screens/register_screen.dart';
 import 'package:flutter/material.dart';
+
+import 'package:expo_master/utils/token_storage.dart';
+
 import '../api/visitor_api.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -23,12 +28,27 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = false);
 
     if (result != null) {
+      final token = result['token'];
+      final name = result['name'];
+      final userType = result['userType'];
+
+      // ✅ حفظ التوكن
+      await TokenStorage.saveToken(token);
+
+      // ✅ رسالة ترحيب
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("مرحبًا ${result['name']}"),
+          content: Text("مرحبًا $name"),
           backgroundColor: Colors.green,
         ),
       );
+
+      // ✅ توجيه المستخدم حسب النوع
+      if (userType == 4) {
+        Navigator.pushNamed(context, '/manager-dashboard');
+      } else {
+        Navigator.pushNamed(context, '/visitor-home');
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -52,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 16),
             Text("تسجيل الدخول", style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 32),
+
             TextField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
@@ -61,6 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 16),
+
             TextField(
               controller: passwordController,
               obscureText: true,
@@ -70,6 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 24),
+
             SizedBox(
               width: double.infinity,
               child: isLoading
@@ -81,6 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 16),
+
             TextButton.icon(
               onPressed: () {
                 Navigator.push(

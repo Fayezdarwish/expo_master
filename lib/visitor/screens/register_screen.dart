@@ -15,6 +15,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final confirmPasswordController = TextEditingController();
 
   bool isLoading = false;
+  int userType = 1; // 1 = زائر (افتراضي), 2 = عارض
 
   void handleRegister() async {
     final name = nameController.text.trim();
@@ -33,7 +34,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
 
     setState(() => isLoading = true);
-    final result = await VisitorApi.register(name, email, password);
+
+    final result = await VisitorApi.register(name, email, password, userType);
+
     setState(() => isLoading = false);
 
     if (result != null) {
@@ -55,8 +58,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       appBar: AppBar(title: const Text("Expo Master")),
       body: SafeArea(
@@ -108,6 +109,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 24),
 
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text("نوع الحساب", style: Theme.of(context).textTheme.bodyMedium),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => userType = 1),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: userType == 1 ? Theme.of(context).primaryColor : const Color(0xFF2C2C2E),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: userType == 1 ? Colors.amber : Colors.grey.shade700,
+                            width: 2,
+                          ),
+                        ),
+                        child: Column(
+                          children: const [
+                            Icon(Icons.person, color: Colors.white),
+                            SizedBox(height: 8),
+                            Text("زائر", style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => userType = 2),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: userType == 2 ? Theme.of(context).primaryColor : const Color(0xFF2C2C2E),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: userType == 2 ? Colors.amber : Colors.grey.shade700,
+                            width: 2,
+                          ),
+                        ),
+                        child: Column(
+                          children: const [
+                            Icon(Icons.store, color: Colors.white),
+                            SizedBox(height: 8),
+                            Text("عارض", style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: isLoading

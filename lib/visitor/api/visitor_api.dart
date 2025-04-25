@@ -9,7 +9,7 @@ class VisitorApi {
         'email': email,
         'password': password,
       });
-  
+
       if (response != null && response.statusCode == 200) {
         return response.data;
       } else {
@@ -22,22 +22,23 @@ class VisitorApi {
     }
   }
 
+
   /// 📝 إنشاء حساب جديد
-  static Future<Map<String, dynamic>?> register(String name, String email, String password) async {
+  static Future<Map<String, dynamic>?> register(
+      String name, String email, String password, int userType
+      ) async {
     try {
       final response = await ApiService.post('/auth/register', {
-        'name': "fayez",
-        'email': "fayez@gmail.com",
-        'password': "123456789",
+        'name': name,
+        'email': email,
+        'password': password,
+        'userType': userType,
       });
 
       if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
         return response.data;
       } else {
         print('Register Error: ${response?.statusCode} → ${response?.data}');
-        print('Register response: ${response?.statusCode}');
-        print('Register data: ${response?.data}');
-
         return null;
       }
     } catch (e) {
@@ -45,4 +46,6 @@ class VisitorApi {
       return null;
     }
   }
+
+
 }

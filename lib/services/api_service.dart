@@ -4,11 +4,13 @@ import '../constants/api_constants.dart';
 class ApiService {
   static final Dio _dio = Dio(BaseOptions(
     baseUrl: baseUrl,
-    connectTimeout: const Duration(seconds: 20),
-    receiveTimeout: const Duration(seconds: 20),
+    connectTimeout: const Duration(seconds: 50),
+    receiveTimeout: const Duration(seconds: 50),
     headers: {
-      'Content-Type': 'application/json',
-    },
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+
   ));
 
   static Future<Response?> get(String url) async {
