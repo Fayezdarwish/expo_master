@@ -1,5 +1,6 @@
-import 'package:expo_master/visitor/screens/login_screen.dart';
+import 'package:expo_master/screens%20_%20login%20and%20registar/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'Features/exibition_manager/add_exibition/presentation/add_exibition_screen.dart';
 import 'config/theme.dart';
 
 void main() {
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Expo Master',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData,
-      home: LoginScreen(),
+      home: CreateExhibition(),
     );
   }
 }
