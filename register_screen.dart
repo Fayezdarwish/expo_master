@@ -13,9 +13,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-
   bool isLoading = false;
-
   String selectedRole = 'زائر';
 
   void handleRegister() async {
