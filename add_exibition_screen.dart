@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class CreateExhibition extends StatefulWidget {
   const CreateExhibition({super.key});
 
@@ -11,6 +10,7 @@ class CreateExhibition extends StatefulWidget {
 class _CreateExhibitionState extends State<CreateExhibition> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
+  final TextEditingController _idManagerController = TextEditingController();
 
   String _formatDate(DateTime date) {
     final year = date.year;
@@ -26,10 +26,7 @@ class _CreateExhibitionState extends State<CreateExhibition> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
       builder: (context, child) {
-        return Theme(
-          data: Theme.of(context),
-          child: child!,
-        );
+        return Theme(data: Theme.of(context), child: child!);
       },
     );
 
@@ -40,15 +37,33 @@ class _CreateExhibitionState extends State<CreateExhibition> {
     }
   }
 
+  void _createExhibition() {
+    final int? idManager = int.tryParse(_idManagerController.text.trim());
+
+    if (idManager == null) {
+      showMessage("يرجى إدخال رقم مدير صحيح");
+      return;
+    }
+
+
+    print("تم إنشاء المعرض بنجاح باستخدام ID المدير: $idManager");
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('إنشاء معرض جديد'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('إنشاء معرض جديد'), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -57,18 +72,14 @@ class _CreateExhibitionState extends State<CreateExhibition> {
             Text('اسم المعرض', style: textTheme.bodyMedium),
             const SizedBox(height: 8),
             TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'أدخل اسم المعرض',
-              ),
+              decoration: const InputDecoration(hintText: 'أدخل اسم المعرض'),
             ),
             const SizedBox(height: 16),
 
             Text('وصف المعرض', style: textTheme.bodyMedium),
             const SizedBox(height: 8),
             TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'أدخل وصف المعرض',
-              ),
+              decoration: const InputDecoration(hintText: 'أدخل وصف المعرض'),
               maxLines: 3,
             ),
             const SizedBox(height: 16),
@@ -79,9 +90,7 @@ class _CreateExhibitionState extends State<CreateExhibition> {
               controller: _startDateController,
               readOnly: true,
               onTap: () => _pickDate(_startDateController),
-              decoration: const InputDecoration(
-                hintText: 'اختر تاريخ البداية',
-              ),
+              decoration: const InputDecoration(hintText: 'اختر تاريخ البداية'),
             ),
             const SizedBox(height: 16),
 
@@ -91,34 +100,26 @@ class _CreateExhibitionState extends State<CreateExhibition> {
               controller: _endDateController,
               readOnly: true,
               onTap: () => _pickDate(_endDateController),
-              decoration: const InputDecoration(
-                hintText: 'اختر تاريخ النهاية',
-              ),
+              decoration: const InputDecoration(hintText: 'اختر تاريخ النهاية'),
+            ),
+            const SizedBox(height: 16),
+
+
+            Text('ID المدير', style: textTheme.bodyMedium),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _idManagerController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(hintText: 'أدخل ID المدير'),
             ),
             const SizedBox(height: 32),
 
             ElevatedButton.icon(
-              onPressed: () {
-              },
+              onPressed: _createExhibition,
               icon: const Icon(Icons.check_circle_outline),
               label: const Text('إنشاء المعرض'),
             ),
-            const SizedBox(height: 12),
 
-            ElevatedButton.icon(
-              onPressed: () {
-              },
-              icon: const Icon(Icons.edit_outlined),
-              label: const Text('تعديل المعرض'),
-            ),
-            const SizedBox(height: 12),
-
-            ElevatedButton.icon(
-              onPressed: () {
-              },
-              icon: const Icon(Icons.delete_outline),
-              label: const Text('حذف المعرض'),
-            ),
           ],
         ),
       ),
