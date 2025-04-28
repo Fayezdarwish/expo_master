@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../config/theme.dart';
-import '../../../../visitor/api/visitor_api.dart';
+
+import '../api/visitor_api.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -14,7 +15,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  final managerIdController = TextEditingController();
   bool isLoading = false;
 
   void handleRegister() async {
@@ -22,9 +22,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final email = emailController.text.trim();
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
-    final managerIdText = managerIdController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty || managerIdText.isEmpty) {
+    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       showMessage("الرجاء تعبئة جميع الحقول");
       return;
     }
@@ -34,17 +33,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    int? managerId = int.tryParse(managerIdText);
-    if (managerId == null) {
-      showMessage("الرجاء إدخال رقم معرف مدير صحيح");
-      return;
-    }
-
     setState(() => isLoading = true);
 
-    final int userType = 3;
-    final result = await VisitorApi.register(name, email, password, userType, managerId);
 
+    final int userType = 3;
+
+    final result = await VisitorApi.register(name, email, password, userType);
     setState(() => isLoading = false);
 
     if (result != null) {
@@ -66,10 +60,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Expo Master"),
-      ),
+      appBar: AppBar(title: const Text("Expo Master")),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -78,10 +72,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: [
               const Icon(Icons.person_add_alt_1_rounded, size: 64),
               const SizedBox(height: 16),
-              Text(
-                "إنشاء حساب مدير قسم",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              Text("إنشاء حساب مدير القسم", style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 32),
 
               TextField(
@@ -120,18 +111,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   prefixIcon: Icon(Icons.lock_outline),
                 ),
               ),
-              const SizedBox(height: 16),
 
-              TextField(
-                controller: managerIdController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'معرف المدير',
-                  prefixIcon: Icon(Icons.badge),
-                ),
-              ),
               const SizedBox(height: 24),
-
               SizedBox(
                 width: double.infinity,
                 child: isLoading
