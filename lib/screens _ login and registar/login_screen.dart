@@ -1,7 +1,7 @@
 import 'package:expo_master/screens%20_%20login%20and%20registar/register_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'package:expo_master/utils/token_storage.dart';
+import 'package:expo_master/services/token_storage.dart';
 
 import '../visitor/api/visitor_api.dart';
 

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static final themeData = ThemeData(
     brightness: Brightness.dark,
-    primaryColor: const Color(0xFFF5C518), // ذهبي فخم
-    scaffoldBackgroundColor: const Color(0xFF1C1C1E), // رمادي غامق أنيق
+    primaryColor: const Color(0xFFF5C518),
+    scaffoldBackgroundColor: const Color(0xFF1C1C1E),
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF1C1C1E),
       elevation: 0,
@@ -31,7 +31,7 @@ class AppTheme {
       fillColor: Color(0xFF2C2C2E),
       labelStyle: TextStyle(color: Colors.white70),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
         borderSide: BorderSide.none,
       ),
       prefixIconColor: Color(0xFFF5C518),
@@ -40,16 +40,12 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: Color(0xFFF5C518),
         foregroundColor: Colors.black,
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         padding: const EdgeInsets.symmetric(vertical: 14),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-    ),
-    snackBarTheme: const SnackBarThemeData(
-      backgroundColor: Colors.grey,
-      contentTextStyle: TextStyle(color: Colors.white),
     ),
   );
 }

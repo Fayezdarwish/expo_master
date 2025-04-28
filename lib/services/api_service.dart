@@ -7,20 +7,10 @@ class ApiService {
     connectTimeout: const Duration(seconds: 50),
     receiveTimeout: const Duration(seconds: 50),
     headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
   ));
-
-  static Future<Response?> get(String url) async {
-    try {
-      return await _dio.get(url);
-    } catch (e) {
-      print("GET Error: $e");
-      return null;
-    }
-  }
 
   static Future<Response?> post(String url, Map<String, dynamic> data) async {
     try {
@@ -31,23 +21,6 @@ class ApiService {
     }
   }
 
-  static Future<Response?> put(String url, Map<String, dynamic> data) async {
-    try {
-      return await _dio.put(url, data: data);
-    } catch (e) {
-      print("PUT Error: $e");
-      return null;
-    }
-  }
-
-  static Future<Response?> delete(String url) async {
-    try {
-      return await _dio.delete(url);
-    } catch (e) {
-      print("DELETE Error: $e");
-      return null;
-    }
-  }
   static Future<Response?> postWithToken(String url, Map<String, dynamic> data, String token) async {
     try {
       return await _dio.post(
@@ -58,9 +31,8 @@ class ApiService {
         }),
       );
     } catch (e) {
-      print("POST Error: $e");
+      print("POST with Token Error: $e");
       return null;
     }
   }
-
 }

@@ -58,8 +58,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Expo Master")),
+      appBar: AppBar(
+        title: const Text("Expo Master"),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -68,117 +73,92 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: [
               const Icon(Icons.person_add_alt_1_rounded, size: 64),
               const SizedBox(height: 16),
-              Text("إنشاء حساب", style: Theme.of(context).textTheme.titleLarge),
+              Text("إنشاء حساب", style: textTheme.titleLarge),
               const SizedBox(height: 32),
 
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'الاسم الكامل',
-                  prefixIcon: Icon(Icons.person),
-                ),
-              ),
+              buildTextField(controller: nameController, label: 'الاسم الكامل', icon: Icons.person),
               const SizedBox(height: 16),
 
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
-                  prefixIcon: Icon(Icons.email),
-                ),
-              ),
+              buildTextField(controller: emailController, label: 'البريد الإلكتروني', icon: Icons.email),
               const SizedBox(height: 16),
 
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
-                  prefixIcon: Icon(Icons.lock),
-                ),
-              ),
+              buildTextField(controller: passwordController, label: 'كلمة المرور', icon: Icons.lock, isPassword: true),
               const SizedBox(height: 16),
 
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'تأكيد كلمة المرور',
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
-              ),
+              buildTextField(controller: confirmPasswordController, label: 'تأكيد كلمة المرور', icon: Icons.lock_outline, isPassword: true),
               const SizedBox(height: 24),
 
               Align(
                 alignment: Alignment.centerRight,
-                child: Text("نوع الحساب", style: Theme.of(context).textTheme.bodyMedium),
+                child: Text("نوع الحساب", style: textTheme.bodyMedium),
               ),
+              const SizedBox(height: 8),
+
               Row(
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => userType = 1),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: userType == 1 ? Theme.of(context).primaryColor : const Color(0xFF2C2C2E),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: userType == 1 ? Colors.amber : Colors.grey.shade700,
-                            width: 2,
-                          ),
-                        ),
-                        child: Column(
-                          children: const [
-                            Icon(Icons.person, color: Colors.white),
-                            SizedBox(height: 8),
-                            Text("زائر", style: TextStyle(color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => userType = 2),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: userType == 2 ? Theme.of(context).primaryColor : const Color(0xFF2C2C2E),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: userType == 2 ? Colors.amber : Colors.grey.shade700,
-                            width: 2,
-                          ),
-                        ),
-                        child: Column(
-                          children: const [
-                            Icon(Icons.store, color: Colors.white),
-                            SizedBox(height: 8),
-                            Text("عارض", style: TextStyle(color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  Expanded(child: buildAccountTypeCard(1, Icons.person, "زائر")),
+                  const SizedBox(width: 8),
+                  Expanded(child: buildAccountTypeCard(2, Icons.store, "عارض")),
                 ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
                 child: isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : ElevatedButton.icon(
                   onPressed: handleRegister,
-                  icon: const Icon(Icons.check),
+                  icon: const Icon(Icons.check_circle_outline),
                   label: const Text("تسجيل"),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool isPassword = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+    );
+  }
+
+  Widget buildAccountTypeCard(int type, IconData icon, String label) {
+    final isSelected = userType == type;
+
+    return GestureDetector(
+      onTap: () => setState(() => userType = type),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? Theme.of(context).primaryColor : const Color(0xFF2C2C2E),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? Colors.amber : Colors.grey.shade700,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.white),
+            const SizedBox(height: 8),
+            Text(label, style: const TextStyle(color: Colors.white)),
+          ],
         ),
       ),
     );
