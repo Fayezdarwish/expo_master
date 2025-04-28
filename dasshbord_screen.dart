@@ -18,35 +18,33 @@ class WelcomScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
-              onPressed: () {
-              },
+              onPressed: () {},
               icon: const Icon(Icons.add_business),
-              label: Text(
-                'إنشاء معرض',
-                style: textTheme.bodyMedium,
-              ),
+              label: Text('إنشاء معرض', style: textTheme.bodyMedium),
             ),
             const SizedBox(height: 16),
 
             ElevatedButton.icon(
-              onPressed: () {
-              },
+              onPressed: () {},
               icon: const Icon(Icons.manage_accounts),
-              label: Text(
-                'إدارة معرض',
-                style: textTheme.bodyMedium,
-              ),
+              label: Text('إدارة معرض', style: textTheme.bodyMedium),
             ),
             const SizedBox(height: 16),
 
             ElevatedButton.icon(
-              onPressed: () {
-              },
+              onPressed: () {},
               icon: const Icon(Icons.bar_chart),
-              label: Text(
-                'عرض التقارير',
-                style: textTheme.bodyMedium,
-              ),
+              label: Text('عرض التقارير', style: textTheme.bodyMedium),
+            ),
+            const SizedBox(height: 16),
+
+            ElevatedButton.icon(
+              onPressed:
+                  (
+                    //(هون استدعاء الساين اب تبع مدير القسم)
+                  ) {},
+              icon: const Icon(Icons.manage_accounts),
+              label: Text('انشاء مدير القسم', style: textTheme.bodyMedium),
             ),
           ],
         ),
