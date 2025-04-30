@@ -33,16 +33,15 @@ class _SignUpManagerScreenState extends State<SignUpManagerScreen> {
 
     setState(() => isLoading = true);
 
-    final result = await VisitorApi.registerManager(name, email, password);
+    final int? managerId = await VisitorApi.registerManager(name, email, password);
 
     setState(() => isLoading = false);
 
-    if (result != null && result['user'] != null) {
-      final int managerId = result['user']['id']; // الحصول على رقم ID
+    if (managerId != null) {
       showMessage("تم إنشاء الحساب بنجاح", isSuccess: true);
-      Navigator.pop(context, managerId); // إرجاع الـ managerId
+      Navigator.pop(context, managerId);
     } else {
-      showMessage("فشل إنشاء الحساب");
+      showMessage("فشل استلام المعرف من السيرفر");
     }
   }
 

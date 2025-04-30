@@ -23,15 +23,13 @@ class ApiService {
 
   static Future<Response?> postWithToken(String url, Map<String, dynamic> data, String token) async {
     try {
-      return await _dio.post(
-        url,
-        data: data,
-        options: Options(headers: {
+      return await _dio.post(url, data: data, options: Options(
+        headers: {
           'Authorization': 'Bearer $token',
-        }),
-      );
+        },
+      ));
     } catch (e) {
-      print("POST with Token Error: $e");
+      print("POST With Token Error: $e");
       return null;
     }
   }

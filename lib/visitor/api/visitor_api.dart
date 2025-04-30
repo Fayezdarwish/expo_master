@@ -2,8 +2,7 @@ import '../../services/api_service.dart';
 import '../../services/token_storage.dart';
 
 class VisitorApi {
-
-  /// تسجيل الدخول 🔐
+  /// تسجيل الدخول
   static Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
       final response = await ApiService.post('/auth/login', {
@@ -12,7 +11,8 @@ class VisitorApi {
       });
 
       if (response != null && response.statusCode == 200) {
-        await TokenStorage.saveToken(response.data['token']); // حفظ التوكن بعد تسجيل الدخول
+        await TokenStorage.saveToken(response.data['token']);
+        await TokenStorage.saveUserType(response.data['userType']); // ✅ حفظ نوع المستخدم
         return response.data;
       } else {
         print('Login Error: ${response?.statusCode} → ${response?.data}');
@@ -24,7 +24,7 @@ class VisitorApi {
     }
   }
 
-  /// إنشاء حساب (زائر أو عارض) 📝
+  /// إنشاء حساب (زائر أو عارض)
   static Future<Map<String, dynamic>?> register(
       String name, String email, String password, int userType) async {
     try {
@@ -32,7 +32,7 @@ class VisitorApi {
         'name': name,
         'email': email,
         'password': password,
-        'userType': userType, // نرسل نوع المستخدم
+        'userType': userType,
       });
 
       if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
@@ -47,30 +47,33 @@ class VisitorApi {
     }
   }
 
-  /// إنشاء حساب مدير قسم 🧑‍💼
-  static Future<Map<String, dynamic>?> registerManager(
+  /// إنشاء مدير قسم - يرجّع فقط الـ ID
+  static Future<int?> registerManager(
       String name, String email, String password) async {
     try {
       final response = await ApiService.post('/auth/register', {
         'name': name,
         'email': email,
         'password': password,
-        'userType': 3, // مدير قسم دائماً userType = 3
+        'userType': 3, // مدير قسم
       });
 
       if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
-        return response.data;
-      } else {
-        print('Register Manager Error: ${response?.statusCode} → ${response?.data}');
-        return null;
+        // نحاول نرجع المعرف إذا وُجد
+        if (response.data != null && response.data['managerId'] != null) {
+          return response.data['managerId'];
+        }
       }
+
+      print('Register Manager Error: ${response?.statusCode} → ${response?.data}');
+      return null;
     } catch (e) {
       print('Register Manager Exception: $e');
       return null;
     }
   }
 
-  /// إنشاء قسم جديد 🏢
+  /// إنشاء قسم جديد
   static Future<Map<String, dynamic>?> createDepartment({
     required String name,
     required String description,

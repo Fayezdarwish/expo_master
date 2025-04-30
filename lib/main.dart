@@ -1,5 +1,5 @@
+import 'package:expo_master/screens_login_and_registar/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'Features/welcome/welcome_screen.dart';
 import 'config/theme.dart';
 
 void main() {
@@ -15,7 +15,7 @@ class ExpoMasterApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Expo Master',
       theme: AppTheme.themeData,
-      home: const WelcomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }

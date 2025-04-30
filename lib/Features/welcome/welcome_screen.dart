@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../auth/sinup screen for manger section.dart';
+import '../auth/sinup_screen_for_manger_section.dart';
 import '../department/create_department_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -50,7 +50,6 @@ class WelcomeScreen extends StatelessWidget {
                 textStyle: const TextStyle(fontSize: 18),
               ),
               onPressed: () {
-                // سيتم لاحقًا التوجيه إلى صفحة إدارة المعرض
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('انتقال إلى إدارة المعرض')),
                 );
@@ -66,7 +65,6 @@ class WelcomeScreen extends StatelessWidget {
                 textStyle: const TextStyle(fontSize: 18),
               ),
               onPressed: () {
-                // سيتم لاحقًا التوجيه إلى صفحة عرض التقارير
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('انتقال إلى عرض التقارير')),
                 );

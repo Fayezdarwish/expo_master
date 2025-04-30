@@ -15,34 +15,20 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
   final descriptionController = TextEditingController();
   final startDateController = TextEditingController();
   final endDateController = TextEditingController();
-
   bool isLoading = false;
 
-  // دالة لتنسيق التاريخ
-  String _formatDate(DateTime date) {
-    final year = date.year;
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
-    return '$year-$month-$day';
-  }
-
-  // دالة لاختيار التاريخ
-  Future<void> _pickDate(TextEditingController controller) async {
+  Future<void> pickDate(TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      firstDate: DateTime(2022),
       lastDate: DateTime(2100),
     );
-
     if (picked != null) {
-      setState(() {
-        controller.text = _formatDate(picked);
-      });
+      controller.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
     }
   }
 
-  // دالة إرسال بيانات القسم
   void handleCreateDepartment() async {
     final name = nameController.text.trim();
     final description = descriptionController.text.trim();
@@ -50,7 +36,7 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
     final endDate = endDateController.text.trim();
 
     if (name.isEmpty || description.isEmpty || startDate.isEmpty || endDate.isEmpty) {
-      showMessage("الرجاء تعبئة جميع الحقول");
+      showMessage("الرجاء ملء جميع الحقول");
       return;
     }
 
@@ -68,65 +54,54 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
 
     if (result != null) {
       showMessage("تم إنشاء القسم بنجاح", isSuccess: true);
-      Navigator.pop(context); // الرجوع بعد النجاح
+      Navigator.pop(context);
     } else {
-      showMessage("فشل إنشاء القسم");
+      showMessage("فشل في إنشاء القسم");
     }
   }
 
-  // دالة عرض رسالة
-  void showMessage(String message, {bool isSuccess = false}) {
+  void showMessage(String msg, {bool isSuccess = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isSuccess ? Colors.green : Colors.red,
-      ),
+      SnackBar(content: Text(msg), backgroundColor: isSuccess ? Colors.green : Colors.red),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
-      appBar: AppBar(title: const Text('إنشاء قسم جديد')),
-      body: SafeArea(
+      appBar: AppBar(title: const Text("إنشاء قسم جديد")),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.add_business, size: 64),
-              const SizedBox(height: 16),
-              Text("معلومات القسم", style: textTheme.titleLarge),
-              const SizedBox(height: 32),
-
               TextField(
                 controller: nameController,
                 decoration: const InputDecoration(
                   labelText: 'اسم القسم',
-                  prefixIcon: Icon(Icons.business),
+                  prefixIcon: Icon(Icons.title),
                 ),
               ),
               const SizedBox(height: 16),
 
               TextField(
                 controller: descriptionController,
+                maxLines: 3,
                 decoration: const InputDecoration(
                   labelText: 'وصف القسم',
                   prefixIcon: Icon(Icons.description),
                 ),
-                maxLines: 3,
               ),
               const SizedBox(height: 16),
 
               TextField(
                 controller: startDateController,
                 readOnly: true,
-                onTap: () => _pickDate(startDateController),
+                onTap: () => pickDate(startDateController),
                 decoration: const InputDecoration(
                   labelText: 'تاريخ البداية',
-                  prefixIcon: Icon(Icons.calendar_today),
+                  suffixIcon: Icon(Icons.calendar_today),
                 ),
               ),
               const SizedBox(height: 16),
@@ -134,10 +109,10 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
               TextField(
                 controller: endDateController,
                 readOnly: true,
-                onTap: () => _pickDate(endDateController),
+                onTap: () => pickDate(endDateController),
                 decoration: const InputDecoration(
                   labelText: 'تاريخ النهاية',
-                  prefixIcon: Icon(Icons.calendar_today),
+                  suffixIcon: Icon(Icons.calendar_today),
                 ),
               ),
               const SizedBox(height: 32),

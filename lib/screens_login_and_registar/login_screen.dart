@@ -1,8 +1,7 @@
-import 'package:expo_master/screens%20_%20login%20and%20registar/register_screen.dart';
+import 'package:expo_master/screens_login_and_registar/register_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:expo_master/services/token_storage.dart';
-
 import '../visitor/api/visitor_api.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,35 +27,33 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = false);
 
     if (result != null) {
-      final token = result['token'];
-      final name = result['name'];
       final userType = result['userType'];
 
-      // ✅ حفظ التوكن
-      await TokenStorage.saveToken(token);
-
-      // ✅ رسالة ترحيب
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("مرحبًا $name"),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      // ✅ توجيه المستخدم حسب النوع
-      if (userType == 4) {
-        Navigator.pushNamed(context, '/manager-dashboard');
-      } else {
-        Navigator.pushNamed(context, '/visitor-home');
+      switch (userType) {
+        case 4:
+          Navigator.pushReplacementNamed(context, '/admin/welcome');
+          break;
+        case 3:
+          Navigator.pushReplacementNamed(context, '/section/manager');
+          break;
+        case 2:
+          Navigator.pushReplacementNamed(context, '/exhibitor/home');
+          break;
+        case 1:
+          Navigator.pushReplacementNamed(context, '/visitor/home');
+          break;
+        default:
+          showMessage("نوع الحساب غير معروف");
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("فشل تسجيل الدخول"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      showMessage("فشل تسجيل الدخول");
     }
+  }
+
+  void showMessage(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: Colors.red),
+    );
   }
 
   @override
