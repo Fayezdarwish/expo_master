@@ -17,34 +17,52 @@ class WelcomScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.add_business),
-              label: Text('إنشاء معرض', style: textTheme.bodyMedium),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.add_business),
+                label: Text(
+                  'إنشاء قسم جديد',
+                  style: textTheme.bodyMedium,
+                ),
+              ),
             ),
             const SizedBox(height: 16),
-
-            ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.manage_accounts),
-              label: Text('إدارة معرض', style: textTheme.bodyMedium),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.manage_accounts),
+                label: Text(
+                  'إدارة المعارض',
+                  style: textTheme.bodyMedium,
+                ),
+              ),
             ),
             const SizedBox(height: 16),
-
-            ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.bar_chart),
-              label: Text('عرض التقارير', style: textTheme.bodyMedium),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.event),
+                label: Text(
+                  'إنشاء فعالية',
+                  style: textTheme.bodyMedium,
+                ),
+              ),
             ),
             const SizedBox(height: 16),
-
-            ElevatedButton.icon(
-              onPressed:
-                  (
-                    //(هون استدعاء الساين اب تبع مدير القسم)
-                  ) {},
-              icon: const Icon(Icons.manage_accounts),
-              label: Text('انشاء مدير القسم', style: textTheme.bodyMedium),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.bar_chart),
+                label: Text(
+                  'التقارير و التحاليل',
+                  style: textTheme.bodyMedium,
+                ),
+              ),
             ),
           ],
         ),
