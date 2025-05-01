@@ -11,9 +11,18 @@ class VisitorApi {
       });
 
       if (response != null && response.statusCode == 200) {
-        await TokenStorage.saveToken(response.data['token']);
-        await TokenStorage.saveUserType(response.data['userType']); // ✅ حفظ نوع المستخدم
-        return response.data;
+        final data = response.data;
+
+        final String token = data['token'] as String;
+        final int userType = data['userType'] as int;
+
+        await TokenStorage.saveToken(token);
+        await TokenStorage.saveUserType(userType);
+
+        return {
+          'token': token,
+          'userType': userType,
+        };
       } else {
         print('Login Error: ${response?.statusCode} → ${response?.data}');
         return null;
@@ -35,7 +44,7 @@ class VisitorApi {
         'userType': userType,
       });
 
-      if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
+      if (response != null && (response.statusCode == 200 ||  response.statusCode == 201)) {
         return response.data;
       } else {
         print('Register Error: ${response?.statusCode} → ${response?.data}');
@@ -48,24 +57,32 @@ class VisitorApi {
   }
 
   /// إنشاء مدير قسم - يرجّع فقط الـ ID
-  static Future<int?> registerManager(
-      String name, String email, String password) async {
+  static Future<int?> registerManager(String name, String email, String password) async {
     try {
-      final response = await ApiService.post('/auth/register', {
+      final token = await TokenStorage.getToken();
+      if (token == null) {
+        print('Register Manager Error: No token found');
+        return null;
+      }
+
+      final response = await ApiService.postWithToken('/admin/create-manager', {
         'name': name,
         'email': email,
         'password': password,
-        'userType': 3, // مدير قسم
-      });
+        'userType': 3,
+      }, token);
 
-      if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
-        // نحاول نرجع المعرف إذا وُجد
-        if (response.data != null && response.data['managerId'] != null) {
-          return response.data['managerId'];
+      if (response != null && (response.statusCode == 200  || response.statusCode == 201)) {
+        final data = response.data;
+        if (data != null && data['managerId'] != null) {
+          return data['managerId'] as int;
+        } else {
+          print('Register Manager: No managerId found in response');
         }
+      } else {
+        print('Register Manager Error: ${response?.statusCode} → ${response?.data}');
       }
 
-      print('Register Manager Error: ${response?.statusCode} → ${response?.data}');
       return null;
     } catch (e) {
       print('Register Manager Exception: $e');

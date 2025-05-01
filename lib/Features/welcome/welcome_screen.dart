@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../screens_login_and_registar/logout_helper.dart';
 import '../auth/sinup_screen_for_manger_section.dart';
 import '../department/create_department_screen.dart';
 
@@ -13,6 +14,13 @@ class WelcomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('مرحبًا بك في Expo Master'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'تسجيل الخروج',
+            onPressed: () => LogoutHelper.logoutUser(context),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -20,16 +28,14 @@ class WelcomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 60),
-                textStyle: const TextStyle(fontSize: 18),
-              ),
               onPressed: () async {
-                final managerId = await Navigator.push(
+                // ➕ افتح شاشة تسجيل مدير القسم أولاً
+                final managerId = await Navigator.push<int>(
                   context,
                   MaterialPageRoute(builder: (context) => const SignUpManagerScreen()),
                 );
 
+                // ✅ إذا تم الإرجاع بنجاح انتقل لإنشاء القسم
                 if (managerId != null) {
                   Navigator.push(
                     context,
@@ -40,37 +46,34 @@ class WelcomeScreen extends StatelessWidget {
                 }
               },
               icon: const Icon(Icons.add_business),
-              label: const Text('إنشاء قسم جديد'),
+              label: Text('إنشاء قسم جديد', style: textTheme.bodyMedium),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 60),
-                textStyle: const TextStyle(fontSize: 18),
-              ),
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('انتقال إلى إدارة المعرض')),
-                );
+                // 🛠 توجيه لواجهة إدارة المعرض لاحقًا
               },
               icon: const Icon(Icons.manage_accounts),
-              label: const Text('إدارة المعرض'),
+              label: Text('إدارة المعرض', style: textTheme.bodyMedium),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 60),
-                textStyle: const TextStyle(fontSize: 18),
-              ),
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('انتقال إلى عرض التقارير')),
-                );
+                // 📊 توجيه لواجهة عرض التقارير لاحقًا
               },
               icon: const Icon(Icons.bar_chart),
-              label: const Text('عرض التقارير'),
+              label: Text('عرض التقارير', style: textTheme.bodyMedium),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              ),
             ),
           ],
         ),

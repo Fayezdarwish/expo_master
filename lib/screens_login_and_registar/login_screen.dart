@@ -1,7 +1,5 @@
 import 'package:expo_master/screens_login_and_registar/register_screen.dart';
 import 'package:flutter/material.dart';
-
-import 'package:expo_master/services/token_storage.dart';
 import '../visitor/api/visitor_api.dart';
 
 class LoginScreen extends StatefulWidget {

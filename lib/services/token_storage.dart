@@ -6,15 +6,18 @@ class TokenStorage {
     await prefs.setString('auth_token', token);
   }
 
+  static Future<void> saveUserType(int userType) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('user_type', userType);
+  }
+
+
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
 
-  static Future<void> saveUserType(int userType) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('user_type', userType);
-  }
+
 
   static Future<int?> getUserType() async {
     final prefs = await SharedPreferences.getInstance();

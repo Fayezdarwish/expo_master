@@ -1,126 +1,134 @@
 import 'package:flutter/material.dart';
 import '../../visitor/api/visitor_api.dart';
+import '../../services/token_storage.dart';
 
 class SignUpManagerScreen extends StatefulWidget {
-  const SignUpManagerScreen({super.key});
+const SignUpManagerScreen({super.key});
 
-  @override
-  State<SignUpManagerScreen> createState() => _SignUpManagerScreenState();
+@override
+State<SignUpManagerScreen> createState() => _SignUpManagerScreenState();
 }
 
 class _SignUpManagerScreenState extends State<SignUpManagerScreen> {
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
-  bool isLoading = false;
+final nameController = TextEditingController();
+final emailController = TextEditingController();
+final passwordController = TextEditingController();
+final confirmPasswordController = TextEditingController();
+bool isLoading = false;
 
-  void handleRegisterManager() async {
-    final name = nameController.text.trim();
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-    final confirmPassword = confirmPasswordController.text.trim();
+void handleRegisterManager() async {
+final name = nameController.text.trim();
+final email = emailController.text.trim();
+final password = passwordController.text.trim();
+final confirmPassword = confirmPasswordController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      showMessage("الرجاء تعبئة جميع الحقول");
-      return;
-    }
+if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+showMessage("الرجاء تعبئة جميع الحقول");
+return;
+}
 
-    if (password != confirmPassword) {
-      showMessage("كلمتا المرور غير متطابقتين");
-      return;
-    }
+if (password != confirmPassword) {
+showMessage("كلمتا المرور غير متطابقتين");
+return;
+}
 
-    setState(() => isLoading = true);
+// ✅ تحقق من صلاحية المستخدم
+final userType = await TokenStorage.getUserType();
+if (userType != 4) {
+showMessage("ليس لديك صلاحية لإنشاء مدير قسم");
+return;
+}
 
-    final int? managerId = await VisitorApi.registerManager(name, email, password);
+setState(() => isLoading = true);
 
-    setState(() => isLoading = false);
+final int? managerId = await VisitorApi.registerManager(name, email, password);
 
-    if (managerId != null) {
-      showMessage("تم إنشاء الحساب بنجاح", isSuccess: true);
-      Navigator.pop(context, managerId);
-    } else {
-      showMessage("فشل استلام المعرف من السيرفر");
-    }
-  }
+setState(() => isLoading = false);
 
-  void showMessage(String message, {bool isSuccess = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isSuccess ? Colors.green : Colors.red,
-      ),
-    );
-  }
+if (managerId != null) {
+showMessage("تم إنشاء الحساب بنجاح", isSuccess: true);
+Navigator.pop(context, managerId);
+} else {
+showMessage("فشل استلام المعرف من السيرفر");
+}
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("تسجيل مدير قسم")),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Icon(Icons.badge, size: 64),
-              const SizedBox(height: 16),
-              Text("إنشاء حساب مدير قسم", style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 32),
+void showMessage(String message, {bool isSuccess = false}) {
+ScaffoldMessenger.of(context).showSnackBar(
+SnackBar(
+content: Text(message),
+backgroundColor: isSuccess ? Colors.green : Colors.red,
+),
+);
+}
 
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'الاسم الكامل',
-                  prefixIcon: Icon(Icons.person),
-                ),
-              ),
-              const SizedBox(height: 16),
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text("تسجيل مدير قسم")),
+body: SafeArea(
+child: SingleChildScrollView(
+padding: const EdgeInsets.all(24.0),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.center,
+children: [
+const Icon(Icons.badge, size: 64),
+const SizedBox(height: 16),
+Text("إنشاء حساب مدير قسم", style: Theme.of(context).textTheme.titleLarge),
+const SizedBox(height: 32),
 
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
-                  prefixIcon: Icon(Icons.email),
-                ),
-              ),
-              const SizedBox(height: 16),
+TextField(
+controller: nameController,
+decoration: const InputDecoration(
+labelText: 'الاسم الكامل',
+prefixIcon: Icon(Icons.person),
+),
+),
+const SizedBox(height: 16),
 
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
-                  prefixIcon: Icon(Icons.lock),
-                ),
-              ),
-              const SizedBox(height: 16),
+TextField(
+controller: emailController,
+decoration: const InputDecoration(
+labelText: 'البريد الإلكتروني',
+prefixIcon: Icon(Icons.email),
+),
+),
+const SizedBox(height: 16),
 
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'تأكيد كلمة المرور',
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
-              ),
-              const SizedBox(height: 32),
+TextField(
+controller: passwordController,
+obscureText: true,
+decoration: const InputDecoration(
+labelText: 'كلمة المرور',
+prefixIcon: Icon(Icons.lock),
+),
+),
+const SizedBox(height: 16),
 
-              SizedBox(
-                width: double.infinity,
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton.icon(
-                  onPressed: handleRegisterManager,
-                  icon: const Icon(Icons.check),
-                  label: const Text("تسجيل"),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+TextField(
+controller: confirmPasswordController,
+obscureText: true,
+decoration: const InputDecoration(
+labelText: 'تأكيد كلمة المرور',
+prefixIcon: Icon(Icons.lock_outline),
+),
+),
+const SizedBox(height: 32),
+
+SizedBox(
+width: double.infinity,
+child: isLoading
+? const Center(child: CircularProgressIndicator())
+    : ElevatedButton.icon(
+onPressed: handleRegisterManager,
+icon: const Icon(Icons.check),
+label: const Text("تسجيل"),
+),
+),
+],
+),
+),
+),
+);
+}
 }
