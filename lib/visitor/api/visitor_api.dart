@@ -2,7 +2,7 @@ import '../../services/api_service.dart';
 import '../../services/token_storage.dart';
 
 class VisitorApi {
-  /// تسجيل الدخول
+
   static Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
       final response = await ApiService.post('/auth/login', {
@@ -33,7 +33,6 @@ class VisitorApi {
     }
   }
 
-  /// إنشاء حساب (زائر أو عارض)
   static Future<Map<String, dynamic>?> register(
       String name, String email, String password, int userType) async {
     try {
@@ -56,7 +55,7 @@ class VisitorApi {
     }
   }
 
-  /// إنشاء مدير قسم - يرجّع فقط الـ ID
+
   static Future<int?> registerManager(String name, String email, String password) async {
     try {
       final token = await TokenStorage.getToken();
@@ -90,7 +89,6 @@ class VisitorApi {
     }
   }
 
-  /// إنشاء قسم جديد
   static Future<Map<String, dynamic>?> createDepartment({
     required String name,
     required String description,

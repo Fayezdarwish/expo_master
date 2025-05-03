@@ -22,61 +22,101 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () async {
-                // ➕ افتح شاشة تسجيل مدير القسم أولاً
-                final managerId = await Navigator.push<int>(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignUpManagerScreen()),
-                );
-
-                // ✅ إذا تم الإرجاع بنجاح انتقل لإنشاء القسم
-                if (managerId != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreateDepartmentScreen(managerId: managerId),
-                    ),
-                  );
-                }
-              },
-              icon: const Icon(Icons.add_business),
-              label: Text('إنشاء قسم جديد', style: textTheme.bodyMedium),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2C2C2E),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.emoji_events, size: 80, color: Color(0xFFF5C518)),
+                const SizedBox(height: 16),
+                Text(
+                  "أهلاً بك في لوحة تحكم مدير المعرض",
+                  style: textTheme.titleLarge?.copyWith(
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
 
-            ElevatedButton.icon(
-              onPressed: () {
-                // 🛠 توجيه لواجهة إدارة المعرض لاحقًا
-              },
-              icon: const Icon(Icons.manage_accounts),
-              label: Text('إدارة المعرض', style: textTheme.bodyMedium),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              ),
-            ),
-            const SizedBox(height: 16),
+                _buildButton(
+                  context: context,
+                  icon: Icons.add_business,
+                  label: "إنشاء قسم جديد",
+                  onPressed: () async {
+                    final managerId = await Navigator.push<int>(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SignUpManagerScreen()),
+                    );
+                    if (managerId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateDepartmentScreen(managerId: managerId),
+                        ),
+                      );
+                    }
+                  },
+                ),
 
-            ElevatedButton.icon(
-              onPressed: () {
-                // 📊 توجيه لواجهة عرض التقارير لاحقًا
-              },
-              icon: const Icon(Icons.bar_chart),
-              label: Text('عرض التقارير', style: textTheme.bodyMedium),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              ),
+                const SizedBox(height: 16),
+
+                _buildButton(
+                  context: context,
+                  icon: Icons.manage_accounts,
+                  label: "إدارة المعرض",
+                  onPressed: () {
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                _buildButton(
+                  context: context,
+                  icon: Icons.bar_chart,
+                  label: "عرض التقارير",
+                  onPressed: () {
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(icon, color: Colors.black),
+        label: Text(label),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFF5C518),
+          foregroundColor: Colors.black,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        onPressed: onPressed,
       ),
     );
   }
