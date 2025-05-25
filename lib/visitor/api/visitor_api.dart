@@ -122,4 +122,37 @@ class VisitorApi {
       return null;
     }
   }
+  static Future<Map<String, dynamic>?> forgotPassword(String email) async {
+    try {
+      final response = await ApiService.post('/auth/forgot-password', {
+        'email': email,
+      });
+
+      if (response != null && response.statusCode == 200) {
+        return response.data;
+      } else {
+        print('Forgot Password Error: ${response?.statusCode} → ${response?.data}');
+      }
+    } catch (e) {
+      print('Forgot Password Exception: $e');
+    }
+
+    return null;
+  }
+
+  static Future<bool> resetPassword(String token, String newPassword) async {
+    try {
+      final response = await ApiService.post('/auth/reset-password', {
+        'token': token,
+        'newPassword': newPassword,
+      });
+
+      return response != null && response.statusCode == 200;
+    } catch (e) {
+      print("Reset Password Exception: $e");
+      return false;
+    }
+  }
+
+
 }

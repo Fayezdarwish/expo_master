@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../visitor/api/visitor_api.dart';
+import '../visitor/api/visitor_api.dart';
 
 class CreateDepartmentScreen extends StatefulWidget {
   final int managerId;

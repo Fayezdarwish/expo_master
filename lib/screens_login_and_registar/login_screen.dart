@@ -99,6 +99,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/forgot-password');
+              },
+              child: const Text('نسيت كلمة المرور؟'),
+            ),
 
             TextButton.icon(
               onPressed: () {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../visitor/api/visitor_api.dart';
-import '../../services/token_storage.dart';
+import '../visitor/api/visitor_api.dart';
+import '../services/token_storage.dart';
 
 class SignUpManagerScreen extends StatefulWidget {
   const SignUpManagerScreen({super.key});
