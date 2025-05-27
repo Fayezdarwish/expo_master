@@ -3,8 +3,15 @@ import '../visitor/api/visitor_api.dart';
 
 class CreateDepartmentScreen extends StatefulWidget {
   final int managerId;
+  final bool isEdit;
+  final Map<String, dynamic>? existingDepartment;
 
-  const CreateDepartmentScreen({super.key, required this.managerId});
+  const CreateDepartmentScreen({
+    super.key,
+    required this.managerId,
+    this.isEdit = false,
+    this.existingDepartment,
+  });
 
   @override
   State<CreateDepartmentScreen> createState() => _CreateDepartmentScreenState();
@@ -16,6 +23,20 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
   final startDateController = TextEditingController();
   final endDateController = TextEditingController();
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // تعبئة البيانات إذا تعديل
+    if (widget.isEdit && widget.existingDepartment != null) {
+      final dept = widget.existingDepartment!;
+      nameController.text = dept['name'] ?? '';
+      descriptionController.text = dept['description'] ?? '';
+      startDateController.text = dept['startDate']?.split('T')[0] ?? '';
+      endDateController.text = dept['endDate']?.split('T')[0] ?? '';
+    }
+  }
 
   Future<void> pickDate(TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
@@ -29,7 +50,7 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
     }
   }
 
-  void handleCreateDepartment() async {
+  void handleSubmit() async {
     final name = nameController.text.trim();
     final description = descriptionController.text.trim();
     final startDate = startDateController.text.trim();
@@ -42,21 +63,36 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
 
     setState(() => isLoading = true);
 
-    final result = await VisitorApi.createDepartment(
-      name: name,
-      description: description,
-      startDate: startDate,
-      endDate: endDate,
-      managerId: widget.managerId,
-    );
+    bool success = false;
+
+    if (widget.isEdit && widget.existingDepartment != null) {
+      final id = widget.existingDepartment!['id'];
+      success = await VisitorApi.updateDepartment(
+        id: id,
+        name: name,
+        description: description,
+        startDate: startDate,
+        endDate: endDate,
+        managerId: widget.managerId,
+      );
+    } else {
+      final result = await VisitorApi.createDepartment(
+        name: name,
+        description: description,
+        startDate: startDate,
+        endDate: endDate,
+        managerId: widget.managerId,
+      );
+      success = result != null;
+    }
 
     setState(() => isLoading = false);
 
-    if (result != null) {
-      showMessage("تم إنشاء القسم بنجاح", isSuccess: true);
+    if (success) {
+      showMessage("تم الحفظ بنجاح", isSuccess: true);
       Navigator.pop(context);
     } else {
-      showMessage("فشل في إنشاء القسم");
+      showMessage("فشل في العملية");
     }
   }
 
@@ -68,8 +104,10 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final title = widget.isEdit ? "تعديل بيانات القسم" : "إنشاء قسم جديد";
+
     return Scaffold(
-      appBar: AppBar(title: const Text("إنشاء قسم جديد")),
+      appBar: AppBar(title: Text(title)),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: SingleChildScrollView(
@@ -122,9 +160,9 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
                 child: isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : ElevatedButton.icon(
-                  onPressed: handleCreateDepartment,
+                  onPressed: handleSubmit,
                   icon: const Icon(Icons.check_circle),
-                  label: const Text("إنشاء القسم"),
+                  label: Text(widget.isEdit ? "حفظ التعديلات" : "إنشاء القسم"),
                 ),
               ),
             ],

@@ -154,5 +154,67 @@ class VisitorApi {
     }
   }
 
+// جلب كل الأقسام
+  static Future<List<Map<String, dynamic>>?> fetchDepartments() async {
+    try {
+      final token = await TokenStorage.getToken();
+      if (token == null) return null;
+
+      final response = await ApiService.getWithToken('/departments', token);
+
+      if (response != null && response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(response.data['departments']);
+      } else {
+        print("Fetch Error: ${response?.statusCode} → ${response?.data}");
+        return null;
+      }
+    } catch (e) {
+      print("Fetch Exception: $e");
+      return null;
+    }
+  }
+
+// حذف قسم
+  static Future<bool> deleteDepartment(int id) async {
+    try {
+      final token = await TokenStorage.getToken();
+      if (token == null) return false;
+
+      final response = await ApiService.deleteWithToken('/departments/$id', token);
+
+      return response != null && response.statusCode == 200;
+    } catch (e) {
+      print("Delete Error: $e");
+      return false;
+    }
+  }
+
+// تعديل قسم
+  static Future<bool> updateDepartment({
+    required int id,
+    required String name,
+    required String description,
+    required String startDate,
+    required String endDate,
+    required int managerId,
+  }) async {
+    try {
+      final token = await TokenStorage.getToken();
+      if (token == null) return false;
+
+      final response = await ApiService.putWithToken('/departments/$id', {
+        'name': name,
+        'description': description,
+        'startDate': startDate,
+        'endDate': endDate,
+        'manager_id': managerId,
+      }, token);
+
+      return response != null && response.statusCode == 200;
+    } catch (e) {
+      print("Update Error: $e");
+      return false;
+    }
+  }
 
 }

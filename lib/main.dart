@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:expo_master/config/theme.dart';
 import 'package:expo_master/screens_login_and_registar/login_screen.dart';
 import 'package:expo_master/screens_login_and_registar/register_screen.dart';
+import 'Features/manage_departments_screen.dart';
 import 'Features/welcome_screen.dart';
 
 void main() {
@@ -19,16 +20,14 @@ class ExpoMasterApp extends StatelessWidget {
       title: 'Expo Master',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData,
-      initialRoute: '/login',
+      initialRoute: '/admin/welcome',
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const SignUpScreen(),
         '/admin/welcome': (context) => const WelcomeScreen(),
-          '/forgot-password': (context) => const ForgotPasswordScreen(),
-          '/reset-password': (context) => const ResetPasswordScreen(),
-
-
-
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/reset-password': (context) => const ResetPasswordScreen(),
+        '/ManageDepartmentsScreen': (context) => const ManageDepartmentsScreen(),
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens_login_and_registar/logout_helper.dart';
+import 'manage_departments_screen.dart';
 import 'sinup_screen_for_manger_section.dart';
 import 'create_department_screen.dart';
 
@@ -74,13 +75,17 @@ class WelcomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                _buildButton(
-                  context: context,
-                  icon: Icons.manage_accounts,
-                  label: "إدارة المعرض",
+                ElevatedButton.icon(
                   onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ManageDepartmentsScreen()),
+                    );
                   },
+                  icon: const Icon(Icons.manage_accounts),
+                  label: Text('إدارة المعرض', style: textTheme.bodyMedium),
                 ),
+
                 const SizedBox(height: 16),
 
                 _buildButton(
