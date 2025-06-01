@@ -28,7 +28,6 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
   void initState() {
     super.initState();
 
-    // تعبئة البيانات إذا تعديل
     if (widget.isEdit && widget.existingDepartment != null) {
       final dept = widget.existingDepartment!;
       nameController.text = dept['name'] ?? '';
@@ -39,10 +38,10 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
   }
 
   Future<void> pickDate(TextEditingController controller) async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2022),
+      firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
@@ -57,7 +56,7 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
     final endDate = endDateController.text.trim();
 
     if (name.isEmpty || description.isEmpty || startDate.isEmpty || endDate.isEmpty) {
-      showMessage("الرجاء ملء جميع الحقول");
+      showMessage("الرجاء تعبئة جميع الحقول");
       return;
     }
 
@@ -66,9 +65,8 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
     bool success = false;
 
     if (widget.isEdit && widget.existingDepartment != null) {
-      final id = widget.existingDepartment!['id'];
       success = await VisitorApi.updateDepartment(
-        id: id,
+        id: widget.existingDepartment!['id'],
         name: name,
         description: description,
         startDate: startDate,
@@ -92,7 +90,7 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
       showMessage("تم الحفظ بنجاح", isSuccess: true);
       Navigator.pop(context);
     } else {
-      showMessage("فشل في العملية");
+      showMessage("فشلت العملية");
     }
   }
 
@@ -104,69 +102,58 @@ class _CreateDepartmentScreenState extends State<CreateDepartmentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.isEdit ? "تعديل بيانات القسم" : "إنشاء قسم جديد";
-
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(widget.isEdit ? "تعديل القسم" : "إنشاء قسم")),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'اسم القسم',
-                  prefixIcon: Icon(Icons.title),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              TextField(
-                controller: descriptionController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'وصف القسم',
-                  prefixIcon: Icon(Icons.description),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              TextField(
-                controller: startDateController,
-                readOnly: true,
-                onTap: () => pickDate(startDateController),
-                decoration: const InputDecoration(
-                  labelText: 'تاريخ البداية',
-                  suffixIcon: Icon(Icons.calendar_today),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              TextField(
-                controller: endDateController,
-                readOnly: true,
-                onTap: () => pickDate(endDateController),
-                decoration: const InputDecoration(
-                  labelText: 'تاريخ النهاية',
-                  suffixIcon: Icon(Icons.calendar_today),
-                ),
-              ),
+              buildField("اسم القسم", nameController, icon: Icons.title),
+              buildField("وصف القسم", descriptionController, icon: Icons.description, maxLines: 3),
+              buildDateField("تاريخ البداية", startDateController),
+              buildDateField("تاريخ النهاية", endDateController),
               const SizedBox(height: 32),
-
-              SizedBox(
-                width: double.infinity,
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton.icon(
-                  onPressed: handleSubmit,
-                  icon: const Icon(Icons.check_circle),
-                  label: Text(widget.isEdit ? "حفظ التعديلات" : "إنشاء القسم"),
-                ),
+              isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton.icon(
+                onPressed: handleSubmit,
+                icon: const Icon(Icons.check_circle),
+                label: Text(widget.isEdit ? "حفظ التعديلات" : "إنشاء القسم"),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildField(String label, TextEditingController controller,
+      {IconData? icon, int maxLines = 1}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: icon != null ? Icon(icon) : null,
+        ),
+      ),
+    );
+  }
+
+  Widget buildDateField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: controller,
+        readOnly: true,
+        onTap: () => pickDate(controller),
+        decoration: InputDecoration(
+          labelText: label,
+          suffixIcon: const Icon(Icons.calendar_today),
         ),
       ),
     );

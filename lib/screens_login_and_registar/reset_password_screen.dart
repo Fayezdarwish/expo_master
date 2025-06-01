@@ -10,11 +10,43 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   bool isLoading = false;
+
+  void handleResetPassword(String email) async {
+    final newPassword = newPasswordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    if (newPassword.isEmpty || confirmPassword.isEmpty) {
+      showMessage("يرجى إدخال كلمة مرور وتأكيدها");
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    final result = await VisitorApi.resetPassword(
+      email: email,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword,
+    );
+
+    setState(() => isLoading = false);
+
+    if (result != null && result['message'] != null) {
+      showMessage("تم تغيير كلمة المرور بنجاح");
+      Navigator.popUntil(context, ModalRoute.withName('/login'));
+    } else {
+      showMessage("فشل في تغيير كلمة المرور");
+    }
+  }
+
+  void showMessage(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
 
   @override
   Widget build(BuildContext context) {
-    final resetToken = ModalRoute.of(context)!.settings.arguments as String?;
+    final email = ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
       appBar: AppBar(title: const Text("إعادة تعيين كلمة المرور")),
@@ -22,7 +54,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const Text("أدخل كلمة المرور الجديدة"),
+            const Text("أدخل كلمة المرور الجديدة وأكدها"),
             const SizedBox(height: 20),
             TextField(
               controller: newPasswordController,
@@ -32,27 +64,18 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 prefixIcon: Icon(Icons.lock),
               ),
             ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: confirmPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: "تأكيد كلمة المرور",
+                prefixIcon: Icon(Icons.lock_outline),
+              ),
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                final newPassword = newPasswordController.text.trim();
-
-                if (newPassword.isEmpty || resetToken == null) {
-                  showMessage("يرجى إدخال كلمة مرور صالحة");
-                  return;
-                }
-
-                setState(() => isLoading = true);
-                final result = await VisitorApi.resetPassword(resetToken, newPassword);
-                setState(() => isLoading = false);
-
-                if (result) {
-                  showMessage("تم تعيين كلمة المرور بنجاح");
-                  Navigator.popUntil(context, ModalRoute.withName('/'));
-                } else {
-                  showMessage("فشل إعادة التعيين");
-                }
-              },
+              onPressed: () => handleResetPassword(email),
               child: isLoading
                   ? const CircularProgressIndicator()
                   : const Text("إعادة التعيين"),
@@ -61,9 +84,5 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
       ),
     );
-  }
-
-  void showMessage(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }

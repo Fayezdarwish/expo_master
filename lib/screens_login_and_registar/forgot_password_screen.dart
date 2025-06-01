@@ -26,18 +26,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     setState(() => isLoading = false);
 
-    if (result != null && result['resetLink'] != null) {
-      showMessage("تم إرسال رابط إعادة التعيين (وهمي)");
-      Navigator.pushNamed(context, '/reset-password', arguments: result['resetLink']);
+    if (result != null && result['email'] != null) {
+      // ✅ ننتقل إلى شاشة إعادة التعيين ونرسل الإيميل
+      Navigator.pushNamed(context, '/reset-password', arguments: result['email']);
     } else {
-      showMessage("فشل إرسال الرابط");
+      showMessage("البريد غير موجود أو فشل في العملية");
     }
   }
 
   void showMessage(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   @override
@@ -48,7 +46,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const Text("أدخل بريدك الإلكتروني وسنرسل رابط إعادة التعيين."),
+            const Text("أدخل بريدك الإلكتروني وسنتحقق منه."),
             const SizedBox(height: 20),
             TextField(
               controller: emailController,
@@ -62,7 +60,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               onPressed: handleForgotPassword,
               child: isLoading
                   ? const CircularProgressIndicator()
-                  : const Text("إرسال رابط التعيين"),
+                  : const Text("متابعة"),
             )
           ],
         ),

@@ -53,6 +53,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
+                // زر إنشاء قسم جديد
                 _buildButton(
                   context: context,
                   icon: Icons.add_business,
@@ -75,24 +76,28 @@ class WelcomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                ElevatedButton.icon(
+                // زر إدارة المعرض (مُعدّل)
+                _buildButton(
+                  context: context,
+                  icon: Icons.manage_accounts,
+                  label: "إدارة المعرض",
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const ManageDepartmentsScreen()),
                     );
                   },
-                  icon: const Icon(Icons.manage_accounts),
-                  label: Text('إدارة المعرض', style: textTheme.bodyMedium),
                 ),
 
                 const SizedBox(height: 16),
 
+                // زر عرض التقارير
                 _buildButton(
                   context: context,
                   icon: Icons.bar_chart,
                   label: "عرض التقارير",
                   onPressed: () {
+                    // سيتم تنفيذ لاحقًا
                   },
                 ),
               ],
@@ -103,6 +108,7 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
+  // أداة إعادة استخدام زر بتنسيق موحد
   Widget _buildButton({
     required BuildContext context,
     required IconData icon,

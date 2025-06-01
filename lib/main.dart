@@ -20,14 +20,14 @@ class ExpoMasterApp extends StatelessWidget {
       title: 'Expo Master',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData,
-      initialRoute: '/admin/welcome',
+      initialRoute: '/login',
       routes: {
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const SignUpScreen(),
+       '/login': (context) => const LoginScreen(),
+       '/register': (context) => const SignUpScreen(),
         '/admin/welcome': (context) => const WelcomeScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/reset-password': (context) => const ResetPasswordScreen(),
-        '/ManageDepartmentsScreen': (context) => const ManageDepartmentsScreen(),
+       '/reset-password': (context) => const ResetPasswordScreen(),
+       '/ManageDepartmentsScreen': (context) => const ManageDepartmentsScreen(),
       },
     );
   }
