@@ -27,7 +27,7 @@ class _VisitorStatsScreenState extends State<VisitorStatsScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Scaffold(
+      return  Scaffold(
         appBar: AppBar(title: Text('إحصائيات الزوار')),
         body: Center(child: CircularProgressIndicator()),
       );
