@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import '../../constants/api_constants.dart';
+import '../../services/api_service.dart';
 import '../../services/dio_client.dart';
+import '../../services/token_storage.dart';
 
 class BoothApi {
   static final Dio _dio = DioClient.dio;
@@ -118,5 +120,22 @@ class BoothApi {
       return false;
     }
   }
+
+  static Future<int> getVisitorStats() async {
+  try {
+  final token = await TokenStorage.getToken();
+  if (token == null) return 0;
+
+  final response = await ApiService.getWithToken('/booth/visitor-stats', token);
+  if (response != null && response.statusCode == 200) {
+  return response.data['visitor_count'] ?? 0;
+  }
+  return 0;
+  } catch (e) {
+  print('Error in getVisitorStats: $e');
+  return 0;
+  }
+  }
+
 
 }
