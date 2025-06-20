@@ -184,3 +184,113 @@ class _AddWingPageState extends State<AddWingPage> {
     );
   }
 }
+
+// 📬 قائمة الطلبات
+class RequestsPage extends StatefulWidget {
+  const RequestsPage({super.key});
+
+  @override
+  State<RequestsPage> createState() => _RequestsPageState();
+}
+
+class _RequestsPageState extends State<RequestsPage> {
+  List requests = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRequests();
+  }
+
+  Future<void> fetchRequests() async {
+    final token = await TokenStorage.getToken();
+    final res = await ApiService.getWithToken('/exhibitor/requests', token!);
+    if (res != null && res.statusCode == 200) {
+      setState(() {
+        requests = res.data['requests'];
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('طلبات العارضين')),
+      body: ListView.builder(
+        itemCount: requests.length,
+        itemBuilder: (context, index) {
+          final req = requests[index];
+          return ListTile(
+            title: Text(req['company_name']),
+            subtitle: Text('القسم: ${req['section_name']}'),
+            trailing: Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (_) => RequestDetailsPage(request: req),
+              )).then((_) => fetchRequests());
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+// 📄 تفاصيل الطلب مع قبول/رفض
+class RequestDetailsPage extends StatefulWidget {
+  final Map request;
+  const RequestDetailsPage({required this.request});
+
+  @override
+  State<RequestDetailsPage> createState() => _RequestDetailsPageState();
+}
+
+class _RequestDetailsPageState extends State<RequestDetailsPage> {
+  final _reasonController = TextEditingController();
+
+  void accept() async {
+    final token = await TokenStorage.getToken();
+    await ApiService.postWithToken('/requests/accept/${widget.request['id']}', {}, token!);
+    Navigator.pop(context);
+  }
+
+  void reject() async {
+    final token = await TokenStorage.getToken();
+    await ApiService.postWithToken('/requests/reject/${widget.request['id']}', {
+      'reason': _reasonController.text,
+    }, token!);
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('تفاصيل الطلب')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('الاسم التجاري: ${widget.request['company_name']}', style: Theme.of(context).textTheme.bodyMedium),
+            Text('رقم الهاتف: ${widget.request['phone']}', style: Theme.of(context).textTheme.bodyMedium),
+            Text('البريد الإلكتروني: ${widget.request['email']}', style: Theme.of(context).textTheme.bodyMedium),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _reasonController,
+              decoration: InputDecoration(labelText: 'سبب الرفض (إن وجد)'),
+              maxLines: 2,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(child: ElevatedButton(onPressed: accept, child: Text('قبول'))),
+                const SizedBox(width: 10),
+                Expanded(child: ElevatedButton(onPressed: reject, child: Text('رفض'))),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
