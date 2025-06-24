@@ -1,14 +1,32 @@
-// edit_wing_page.dart
 import 'package:flutter/material.dart';
+import '../../services/api_service.dart';
 
-/// واجهة تعديل الجناح
-class EditWingPage extends StatelessWidget {
-  const EditWingPage({super.key});
+class EditWingPage extends StatefulWidget {
+  final Map<String, dynamic> wing;
+  const EditWingPage({super.key, required this.wing});
+
+  @override
+  State<EditWingPage> createState() => _EditWingPageState();
+}
+
+class _EditWingPageState extends State<EditWingPage> {
+  late TextEditingController nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController(text: widget.wing['name']);
+  }
+
+  Future<void> updateWing() async {
+    await ApiService.putWithToken('/wings/${widget.wing['id']}', {
+      'name': nameController.text,
+    }, 'YOUR_TOKEN');
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final nameController = TextEditingController(text: "اسم الجناح الحالي");
-
     return Scaffold(
       appBar: AppBar(title: const Text('تعديل الجناح')),
       body: Padding(
@@ -21,9 +39,7 @@ class EditWingPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () async {
-                // تعديل الجناح عبر API
-              },
+              onPressed: updateWing,
               child: const Text('حفظ التعديلات'),
             ),
           ],

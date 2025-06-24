@@ -2,21 +2,23 @@ import '../../services/api_service.dart';
 import '../../services/token_storage.dart';
 
 class VisitorApi {
-
-  static Future<Map<String, dynamic>?> login(String email,
-      String password) async {
+  /// دالة تسجيل الدخول
+  static Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
       final response = await ApiService.post('/auth/login', {
         'email': email,
         'password': password,
       });
 
+      // التأكد من نجاح الطلب
       if (response != null && response.statusCode == 200) {
         final data = response.data;
 
+        // استخراج التوكن ونوع المستخدم
         final String token = data['token'] as String;
         final int userType = data['userType'] as int;
 
+        // حفظ التوكن ونوع المستخدم محلياً
         await TokenStorage.saveToken(token);
         await TokenStorage.saveUserType(userType);
 
@@ -34,8 +36,9 @@ class VisitorApi {
     }
   }
 
-  static Future<Map<String, dynamic>?> register(String name, String email,
-      String password, int userType) async {
+  /// دالة تسجيل مستخدم جديد
+  static Future<Map<String, dynamic>?> register(
+      String name, String email, String password, int userType) async {
     try {
       final response = await ApiService.post('/auth/register', {
         'name': name,
@@ -57,9 +60,8 @@ class VisitorApi {
     }
   }
 
-
-  static Future<int?> registerManager(String name, String email,
-      String password) async {
+  /// تسجيل مدير (مع توكن مصادقة)
+  static Future<int?> registerManager(String name, String email, String password) async {
     try {
       final token = await TokenStorage.getToken();
       if (token == null) {
@@ -83,8 +85,7 @@ class VisitorApi {
           print('Register Manager: No managerId found in response');
         }
       } else {
-        print('Register Manager Error: ${response?.statusCode} → ${response
-            ?.data}');
+        print('Register Manager Error: ${response?.statusCode} → ${response?.data}');
       }
 
       return null;
@@ -94,6 +95,7 @@ class VisitorApi {
     }
   }
 
+  /// إنشاء قسم جديد (مع توكن)
   static Future<Map<String, dynamic>?> createDepartment({
     required String name,
     required String description,
@@ -120,8 +122,7 @@ class VisitorApi {
           (response.statusCode == 200 || response.statusCode == 201)) {
         return response.data;
       } else {
-        print('Create Department Error: ${response?.statusCode} → ${response
-            ?.data}');
+        print('Create Department Error: ${response?.statusCode} → ${response?.data}');
         return null;
       }
     } catch (e) {
@@ -130,7 +131,7 @@ class VisitorApi {
     }
   }
 
-  // نسيان كلمة المرور (فقط تحقق من الإيميل)
+  /// طلب إعادة تعيين كلمة المرور (لا يتطلب توكن)
   static Future<Map<String, dynamic>?> forgotPassword(String email) async {
     try {
       final response = await ApiService.post('/auth/forgot-password', {
@@ -140,8 +141,7 @@ class VisitorApi {
       if (response != null && response.statusCode == 200) {
         return response.data;
       } else {
-        print('Forgot Password Error: ${response?.statusCode} → ${response
-            ?.data}');
+        print('Forgot Password Error: ${response?.statusCode} → ${response?.data}');
         return null;
       }
     } catch (e) {
@@ -150,13 +150,14 @@ class VisitorApi {
     }
   }
 
-//إعادة تعيين كلمة المرور
+  /// دالة إعادة تعيين كلمة المرور (باستخدام دالة PUT بدون توكن)
   static Future<Map<String, dynamic>?> resetPassword({
     required String email,
     required String newPassword,
     required String confirmPassword,
   }) async {
     try {
+      // هنا نستخدم ApiService.put لأنه دالة PUT بدون توكن
       final response = await ApiService.put('/auth/reset-password', {
         'email': email,
         'newPassword': newPassword,
@@ -166,37 +167,43 @@ class VisitorApi {
       if (response != null && response.statusCode == 200) {
         return response.data;
       } else {
-        print('Reset Password Error: ${response?.statusCode} → ${response
-            ?.data}');
+        print('Reset Password Error: ${response?.statusCode} → ${response?.data}');
         return null;
-      } 
+      }
     } catch (e) {
       print('Reset Password Exception: $e');
       return null;
     }
   }
 
-
-// جلب كل الأقسام
+  /// جلب جميع الأقسام (مع توكن)
   static Future<List<Map<String, dynamic>>?> getAllDepartments() async {
     final token = await TokenStorage.getToken();
-    final response = await ApiService.getWithToken('/departments', token!);
+    if (token == null) {
+      print('Get All Departments Error: No token found');
+      return null;
+    }
+    final response = await ApiService.getWithToken('/departments', token);
 
     if (response != null && response.statusCode == 200) {
+      // نتوقع قائمة الأقسام في data['departments']
       return List<Map<String, dynamic>>.from(response.data['departments']);
     }
     return null;
   }
 
-// حذف قسم
+  /// حذف قسم معين (مع توكن)
   static Future<bool> deleteDepartment(int id) async {
     final token = await TokenStorage.getToken();
-    final response = await ApiService.deleteWithToken(
-        '/departments/$id', token!);
+    if (token == null) {
+      print('Delete Department Error: No token found');
+      return false;
+    }
+    final response = await ApiService.deleteWithToken('/departments/$id', token);
     return response != null && response.statusCode == 200;
   }
 
-// تعديل قسم
+  /// تحديث بيانات قسم معين (مع توكن)
   static Future<bool> updateDepartment({
     required int id,
     required String name,
@@ -207,7 +214,10 @@ class VisitorApi {
   }) async {
     try {
       final token = await TokenStorage.getToken();
-      if (token == null) return false;
+      if (token == null) {
+        print('Update Department Error: No token found');
+        return false;
+      }
 
       final response = await ApiService.putWithToken(
         '/departments/$id',
@@ -227,28 +237,30 @@ class VisitorApi {
       return false;
     }
   }
+
+  /// جلب الأقسام (مكررة مع getAllDepartments لكن مع بعض المعالجة الإضافية)
   static Future<List<Map<String, dynamic>>?> fetchDepartments() async {
     try {
       final token = await TokenStorage.getToken();
-      if (token == null) return null;
+      if (token == null) {
+        print('Fetch Departments Error: No token found');
+        return null;
+      }
 
       final response = await ApiService.getWithToken('/departments', token);
 
       if (response != null && response.statusCode == 200) {
         final data = response.data;
-        if (data is List) {
-          return List<Map<String, dynamic>>.from(data);
-        } else if (data is Map && data['departments'] != null) {
+        if (data is Map && data['departments'] != null) {
           return List<Map<String, dynamic>>.from(data['departments']);
+        } else if (data is List) {
+          return List<Map<String, dynamic>>.from(data);
         }
       }
-
       return null;
     } catch (e) {
-      print("Fetch Departments Exception: $e");
+      print('Fetch Departments Exception: $e');
       return null;
     }
   }
-
 }
-

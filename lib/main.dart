@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:expo_master/config/theme.dart';
 
@@ -8,11 +7,13 @@ import 'package:expo_master/screens_login_and_registar/register_screen.dart';
 import 'package:expo_master/screens_login_and_registar/forgot_password_screen.dart';
 import 'package:expo_master/screens_login_and_registar/reset_password_screen.dart';
 
-// شاشات المسؤول
+// شاشات المسؤول (Admin)
+import 'Features/create_department_screen.dart';
+import 'Features/sinup_screen_for_manger_section.dart';
 import 'Features/welcome_screen.dart';
 import 'Features/manage_departments_screen.dart';
 
-// شاشات مدير القسم
+// شاشات مدير القسم (Section Manager)
 import 'manager/screen/RequestDetailsPage.dart';
 import 'manager/screen/add_wing_page.dart';
 import 'manager/screen/edit_wing_page.dart';
@@ -43,32 +44,38 @@ class ExpoMasterApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData,
       initialRoute: '/login',
-      routes: {
-        // ✅ مصادقة المستخدم (ممكن تفعّل حسب الحاجة)
-        '/login': (context) => const LoginScreen(),
-         '/register': (context) => const SignUpScreen(),
-         '/forgot-password': (context) => const ForgotPasswordScreen(),
-         '/reset-password': (context) => const ResetPasswordScreen(),
 
-        // ✅ واجهة المسؤول
+      routes: {
+        // شاشات تسجيل الدخول والمصادقة
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const SignUpScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/reset-password': (context) => const ResetPasswordScreen(),
+
+        // شاشات المسؤول (Admin)
         '/admin/welcome': (context) => const WelcomeScreen(),
         '/ManageDepartmentsScreen': (context) => const ManageDepartmentsScreen(),
+        '/SignUpManagerScreen': (context) => const SignUpManagerScreen(),
 
-        // ✅ مدير القسم
-       //   '/section-manager/home': (context) => const SectionManagerHome(),
-      //   '/section-manager/wings': (context) => const WingListPage(),
-      //   '/section-manager/wings/add': (context) => const AddWingPage(),
-      //   '/section-manager/wings/edit': (context) => const EditWingPage(),
-      //  '/section-manager/requests': (context) => const RequestsListPage(),
-      //  '/section-manager/request-details': (context) => const RequestDetailsPage(),
+        // شاشات مدير القسم (Section Manager)
+        '/section-manager/home': (context) => const SectionManagerHome(),
+        '/section-manager/wings': (context) => const WingListPage(),
+        '/section-manager/wings/add': (context) => const AddWingPage(),
+        // صفحة التعديل غالباً تتطلب تمرير بيانات، لذا يمكن فتحها بـ Navigator.push
+        // '/section-manager/wings/edit': (context) => const EditWingPage(),
+        '/section-manager/requests': (context) => const RequestsListPage(),
 
-        // ✅ العارض (Exhibitor)
-      // '/VendorBoothTasksScreen': (context) =>  VendorBoothTasksScreen(),
-       //   '/VendorCreateBoothScreen': (context) =>  VendorCreateBoothScreen(),
-       //   '/VendorFinalPaymentScreen': (context) =>  VendorFinalPaymentScreen(),
-        //  '/VendorInitialPaymentScreen': (context) =>  VendorInitialPaymentScreen(),
-      //    '/VendorRequestsStatusScreen': (context) =>  VendorRequestsStatusScreen(),
-       //       '/VendorSectionsScreen': (context) =>  VendorSectionsScreen(),
+        // شاشات العارض (Exhibitor)
+        '/exhibitor/home': (context) =>  VendorSectionsScreen(),
+        '/VendorInitialPaymentScreen': (context) => VendorInitialPaymentScreen(),
+        '/VendorRequestsStatusScreen': (context) => VendorRequestsStatusScreen(),
+        '/VendorSectionsScreen': (context) => VendorSectionsScreen(),
+       // '/VendorBoothTasksScreen': (context) => VendorBoothTasksScreen(),
+       // '/VendorCreateBoothScreen': (context) => VendorCreateBoothScreen(),
+       // '/VendorFinalPaymentScreen': (context) => VendorFinalPaymentScreen(),
+
+        // صفحة الزائر - مؤقتة Placeholder
+        '/visitor/home': (context) => const Placeholder(),
       },
     );
   }

@@ -1,9 +1,10 @@
-// request_details_page.dart
 import 'package:flutter/material.dart';
+import '../../services/api_service.dart';
 
-/// تفاصيل الطلب مع القبول والرفض
 class RequestDetailsPage extends StatefulWidget {
-  const RequestDetailsPage({super.key});
+  final Map<String, dynamic> request;
+
+  const RequestDetailsPage({super.key, required this.request});
 
   @override
   State<RequestDetailsPage> createState() => _RequestDetailsPageState();
@@ -12,8 +13,44 @@ class RequestDetailsPage extends StatefulWidget {
 class _RequestDetailsPageState extends State<RequestDetailsPage> {
   final TextEditingController reasonController = TextEditingController();
 
+  Future<void> acceptRequest() async {
+    await ApiService.postWithToken(
+      '/requests/${widget.request['id']}/accept',
+      {},
+      'YOUR_TOKEN', // بدّلها بالتوكن
+    );
+
+    // إذا عندك API لإرسال الإيميل
+    // await ApiService.sendEmail(
+    //   widget.request['email'],
+    //   'تم قبول طلبك. يرجى إتمام الدفعة النهائية.',
+    // );
+
+    Navigator.pop(context);
+  }
+
+  Future<void> rejectRequest() async {
+    final reason = reasonController.text;
+
+    await ApiService.postWithToken(
+      '/requests/${widget.request['id']}/reject',
+      {'reason': reason},
+      'YOUR_TOKEN',
+    );
+
+    // إذا عندك API لإرسال الإيميل
+    // await ApiService.sendEmail(
+    //   widget.request['email'],
+    //   'نأسف، تم رفض طلبك. السبب: $reason',
+    // );
+
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final req = widget.request;
+
     return Scaffold(
       appBar: AppBar(title: const Text('تفاصيل الطلب')),
       body: Padding(
@@ -21,34 +58,36 @@ class _RequestDetailsPageState extends State<RequestDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('تفاصيل العارض ... (مؤقت)'),
-            const SizedBox(height: 16),
+            Text('الاسم: ${req['name']}'),
+            Text('البريد: ${req['email']}'),
+            const SizedBox(height: 20),
             TextField(
               controller: reasonController,
-              decoration: const InputDecoration(labelText: 'سبب الرفض (في حال الرفض)'),
+              decoration: const InputDecoration(
+                labelText: 'سبب الرفض (اختياري)',
+              ),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () async {
-                      // قبول الطلب - إرسال إلى API
-                    },
+                    onPressed: acceptRequest,
                     child: const Text('قبول'),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () async {
-                      // رفض الطلب - إرسال السبب إلى API
-                    },
+                    onPressed: rejectRequest,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
                     child: const Text('رفض'),
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

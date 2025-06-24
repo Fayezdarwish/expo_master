@@ -1,42 +1,78 @@
-// add_wing_page.dart
-import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
-import '../../services/token_storage.dart';
+  import 'package:flutter/material.dart';
+  import '../../services/api_service.dart';
 
-/// واجهة إضافة جناح جديد
-class AddWingPage extends StatelessWidget {
-  const AddWingPage({super.key});
+  class AddWingPage extends StatefulWidget {
+    const AddWingPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final nameController = TextEditingController();
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('إضافة جناح')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'اسم الجناح'),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                final token = await TokenStorage.getToken();
-                if (token != null) {
-                  await ApiService.postWithToken('/wings', {
-                    'name': nameController.text,
-                  }, token);
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('إضافة'),
-            ),
-          ],
-        ),
-      ),
-    );
+    @override
+    State<AddWingPage> createState() => _AddWingPageState();
   }
-}
+
+  class _AddWingPageState extends State<AddWingPage> {
+    final TextEditingController nameController = TextEditingController();
+    String? selectedParticipant;
+    List<dynamic> paidParticipants = [];
+
+    @override
+    void initState() {
+      super.initState();
+      fetchParticipants();
+    }
+
+    Future<void> fetchParticipants() async {
+      final response = await ApiService.get('/participants?is_paid=true');
+      if (response != null) {
+        setState(() {
+          paidParticipants = response.data;
+        });
+      }
+    }
+
+    Future<void> addWing() async {
+      await ApiService.postWithToken('/wings', {
+        'name': nameController.text,
+        'participant_id': selectedParticipant,
+      }, 'YOUR_TOKEN'); // استبدل بـ توكن حقيقي
+
+      Navigator.pop(context);
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('إضافة جناح')),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'اسم الجناح'),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: selectedParticipant,
+                hint: const Text('اختر عارضًا'),
+                items: paidParticipants.map<DropdownMenuItem<String>>((item) {
+                  return DropdownMenuItem<String>(
+                    value: item['id'].toString(),
+                    child: Text(item['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedParticipant = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: addWing,
+                child: const Text('إضافة'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
