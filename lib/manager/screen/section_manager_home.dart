@@ -1,8 +1,8 @@
+/// 1. section_manager_home.dart
 import 'package:flutter/material.dart';
 import 'wing_list_page.dart';
 import 'requests_list_page.dart';
 
-/// الواجهة الرئيسية لمدير القسم
 class SectionManagerHome extends StatelessWidget {
   const SectionManagerHome({super.key});
 

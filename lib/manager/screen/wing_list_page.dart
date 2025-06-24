@@ -1,3 +1,4 @@
+/// 2. wing_list_page.dart
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import 'add_wing_page.dart';
@@ -29,7 +30,7 @@ class _WingListPageState extends State<WingListPage> {
   }
 
   Future<void> deleteWing(int id) async {
-    await ApiService.deleteWithToken('/wings/$id', 'YOUR_TOKEN'); // Replace with real token
+    await ApiService.deleteWithToken('/wings/$id', 'YOUR_TOKEN');
     fetchWings();
   }
 

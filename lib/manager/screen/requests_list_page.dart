@@ -1,6 +1,8 @@
+/// 3. requests_list_page.dart (بدون تعديل كبير، لكن متناسق)
 import 'package:flutter/material.dart';
-import 'RequestDetailsPage.dart';
 import '../../services/api_service.dart';
+import 'RequestDetailsPage.dart';
+
 
 class RequestsListPage extends StatefulWidget {
   const RequestsListPage({super.key});
@@ -19,30 +21,21 @@ class _RequestsListPageState extends State<RequestsListPage> {
   }
 
   Future<void> fetchRequests() async {
-    // هنا نستخدم ApiService.get الذي يعيد Response وليس البيانات مباشرة
     final response = await ApiService.get('/requests');
-
-    // نتأكد أن الرد غير فارغ ورمز الحالة 200
     if (response != null && response.statusCode == 200) {
       final data = response.data;
-
-      // نتأكد أن البيانات هي List قبل تعيينها للحالة
       if (data is List) {
         setState(() {
           requests = data;
         });
-      } else {
-        debugPrint('البيانات غير متوقعة: $data');
       }
-    } else {
-      debugPrint('فشل في جلب البيانات أو استجابة غير 200');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('الطلبات')),
+      appBar: AppBar(title: const Text('طلبات العارضين')),
       body: ListView.builder(
         itemCount: requests.length,
         itemBuilder: (context, index) {
@@ -55,7 +48,7 @@ class _RequestsListPageState extends State<RequestsListPage> {
               MaterialPageRoute(
                 builder: (_) => RequestDetailsPage(request: req),
               ),
-            ),
+            ).then((_) => fetchRequests()),
           );
         },
       ),
