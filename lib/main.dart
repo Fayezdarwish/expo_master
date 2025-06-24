@@ -60,8 +60,7 @@ class ExpoMasterApp extends StatelessWidget {
         // شاشات مدير القسم (Section Manager)
         '/section-manager/home': (context) => const SectionManagerHome(),
         '/section-manager/wings': (context) => const WingListPage(),
-        '/section-manager/wings/add': (context) => const AddWingPage(),
-        // صفحة التعديل غالباً تتطلب تمرير بيانات، لذا يمكن فتحها بـ Navigator.push
+       // '/section-manager/wings/add': (context) => const AddWingPage(),
         // '/section-manager/wings/edit': (context) => const EditWingPage(),
         '/section-manager/requests': (context) => const RequestsListPage(),
 

@@ -66,13 +66,13 @@ class _WingListPageState extends State<WingListPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AddWingPage()),
-        ).then((_) => fetchWings()),
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //  //  onPressed: () => Navigator.push(
+      //  // //   context,
+      //  //  //  MaterialPageRoute(builder: (_) => const AddWingPage()),
+      //  //  ).then((_) => fetchWings()),
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }
