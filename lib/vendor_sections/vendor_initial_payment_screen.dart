@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// شاشة الدفع الأولى (دفع الرسوم الابتدائية لتثبيت الطلب)
 class VendorInitialPaymentScreen extends StatelessWidget {
   /// محاكاة إتمام الدفع
   void completePayment(BuildContext context) {
-    // هنا نضع منطق الدفع التجريبي
-    // بعد الدفع ننتقل لشاشة انتظار الرد أو دفع الإيجار
+    // بعد الدفع ننتقل لشاشة حالة الطلب أو دفع الإيجار النهائي
     Navigator.pushReplacementNamed(context, '/vendor_request_status');
   }
 

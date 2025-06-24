@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../services/token_storage.dart';
 
-/// شاشة لعرض حالة الطلبات للعارض (مقبولة، مرفوضة، قيد الانتظار)
 class VendorRequestsStatusScreen extends StatefulWidget {
   @override
   _VendorRequestsStatusScreenState createState() => _VendorRequestsStatusScreenState();
@@ -10,6 +9,7 @@ class VendorRequestsStatusScreen extends StatefulWidget {
 
 class _VendorRequestsStatusScreenState extends State<VendorRequestsStatusScreen> {
   List requests = [];
+  bool loading = true;
 
   @override
   void initState() {
@@ -17,14 +17,19 @@ class _VendorRequestsStatusScreenState extends State<VendorRequestsStatusScreen>
     fetchRequests();
   }
 
-  /// جلب طلبات العارض من السيرفر
   Future<void> fetchRequests() async {
     final token = await TokenStorage.getToken() ?? '';
     final response = await ApiService.getWithToken('/vendor/requests', token);
     if (response != null && response.statusCode == 200) {
       setState(() {
         requests = response.data;
+        loading = false;
       });
+    } else {
+      setState(() {
+        loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('فشل جلب الطلبات')));
     }
   }
 
@@ -32,7 +37,9 @@ class _VendorRequestsStatusScreenState extends State<VendorRequestsStatusScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('حالة طلباتك')),
-      body: requests.isEmpty
+      body: loading
+          ? Center(child: CircularProgressIndicator())
+          : requests.isEmpty
           ? Center(child: Text('لا توجد طلبات حالياً'))
           : ListView.builder(
         itemCount: requests.length,

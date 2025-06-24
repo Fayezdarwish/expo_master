@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
-/// شاشة المهام للعارض لإضافة المنتجات داخل جناحه
 class VendorBoothTasksScreen extends StatefulWidget {
+  final int exhibitorId; // رقم العارض
+  final int sectionId; // رقم الجناح
+
+  VendorBoothTasksScreen({required this.exhibitorId, required this.sectionId});
+
   @override
   _VendorBoothTasksScreenState createState() => _VendorBoothTasksScreenState();
 }
@@ -12,18 +17,29 @@ class _VendorBoothTasksScreenState extends State<VendorBoothTasksScreen> {
   String productDescription = '';
   double? productPrice;
 
-  /// إضافة منتج جديد (يمكن ربطه لاحقاً بالـ API)
-  void addProduct() {
+  void addProduct() async {
     if (_formKey.currentState!.validate()) {
-      // إضافة المنتج (مثلاً إرسال بياناته للسيرفر)
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تم إضافة المنتج')));
-      // إعادة تعيين الحقول
-      setState(() {
-        productName = '';
-        productDescription = '';
-        productPrice = null;
-      });
-      _formKey.currentState!.reset();
+      final data = {
+        "exhibitorId": widget.exhibitorId,
+        "sectionId": widget.sectionId,
+        "productName": productName,
+        "description": productDescription,
+        "price": productPrice,
+      };
+
+      final response = await ApiService.post('/add-products', data);
+
+      if (response != null && response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تم إضافة المنتج بنجاح')));
+        setState(() {
+          productName = '';
+          productDescription = '';
+          productPrice = null;
+        });
+        _formKey.currentState!.reset();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('حدث خطأ أثناء إضافة المنتج')));
+      }
     }
   }
 

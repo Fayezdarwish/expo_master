@@ -2,18 +2,17 @@ import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
 
 class ApiService {
-  // إنشاء Dio مع الإعدادات الأساسية
   static final Dio _dio = Dio(BaseOptions(
-    baseUrl: baseUrl, // الرابط الأساسي للسيرفر (مثال: http://localhost:3000)
-    connectTimeout: const Duration(seconds: 50), // مهلة الاتصال
-    receiveTimeout: const Duration(seconds: 50), // مهلة استقبال البيانات
+    baseUrl: baseUrl,
+    connectTimeout: const Duration(seconds: 50),
+    receiveTimeout: const Duration(seconds: 50),
     headers: {
-      'Content-Type': 'application/json', // نوع البيانات المرسلة
-      'Accept': 'application/json',       // نوع البيانات المطلوبة من السيرفر
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
   ));
 
-  // دالة POST بدون توكن (تُستخدم مثلاً لتسجيل الدخول أو إنشاء حساب)
+  // POST بدون توكن (مثال: تسجيل دخول)
   static Future<Response?> post(String url, Map<String, dynamic> data) async {
     try {
       return await _dio.post(url, data: data);
@@ -23,7 +22,7 @@ class ApiService {
     }
   }
 
-  // دالة POST مع توكن (للمسارات المحمية التي تحتاج صلاحية دخول)
+  // POST مع توكن (مثال: إنشاء طلب عارض، إضافة منتج، إنشاء جناح)
   static Future<Response?> postWithToken(String url, Map<String, dynamic> data, String token) async {
     try {
       return await _dio.post(
@@ -31,7 +30,7 @@ class ApiService {
         data: data,
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token', // إدخال التوكن في الهيدر
+            'Authorization': 'Bearer $token',
           },
         ),
       );
@@ -41,7 +40,7 @@ class ApiService {
     }
   }
 
-  // دالة GET لجلب بيانات (مثال: عرض كل الأقسام)
+  // GET بدون توكن (مثلاً: جلب الأقسام العامة)
   static Future<Response?> get(String url) async {
     try {
       return await _dio.get(url);
@@ -51,7 +50,7 @@ class ApiService {
     }
   }
 
-  // دالة GET مع توكن لجلب بيانات محمية (مثال: تفاصيل لوحة تحكم مدير المعرض)
+  // GET مع توكن (مثلاً: جلب منتجات العارض، طلبات العارض)
   static Future<Response?> getWithToken(String url, String token) async {
     try {
       return await _dio.get(
@@ -68,7 +67,7 @@ class ApiService {
     }
   }
 
-  // دالة PUT لتعديل بيانات بدون توكن (نادراً ما تستخدم بدون توكن)
+  // PUT بدون توكن (نادراً)
   static Future<Response?> put(String url, Map<String, dynamic> data) async {
     try {
       return await _dio.put(url, data: data);
@@ -78,7 +77,7 @@ class ApiService {
     }
   }
 
-  // دالة PUT مع توكن (لتحديث قسم مثلاً)
+  // PUT مع توكن (مثلاً: تحديث بيانات)
   static Future<Response?> putWithToken(String url, Map<String, dynamic> data, String token) async {
     try {
       return await _dio.put(
@@ -96,7 +95,7 @@ class ApiService {
     }
   }
 
-  // دالة DELETE لحذف بيانات (قسم، مستخدم... إلخ) باستخدام توكن
+  // DELETE مع توكن (مثلاً: حذف بيانات)
   static Future<Response?> deleteWithToken(String url, String token) async {
     try {
       return await _dio.delete(
@@ -113,4 +112,50 @@ class ApiService {
     }
   }
 
+  // ================== دوال خاصة بالعارض ==================
+
+  // إنشاء طلب عارض (POST /exhibitor/create-request)
+  static Future<Response?> createExhibitorRequest(Map<String, dynamic> data, String token) async {
+    // تأكد ان الحقول في data:
+    // userId, exhibitionName, departmentId, contactPhone, notes, sectionId
+    return postWithToken('/exhibitor/create-request', data, token);
+  }
+
+  // إضافة منتج (POST /exhibitor/add-products)
+  static Future<Response?> addProduct(Map<String, dynamic> data, String token) async {
+    // الحقول: exhibitorId, sectionId, productName, description?, price?
+    return postWithToken('/exhibitor/add-products', data, token);
+  }
+
+  // جلب منتجات العارض (GET /exhibitor/my-products)
+  static Future<Response?> getMyProducts(String token) async {
+    return getWithToken('/exhibitor/my-products', token);
+  }
+
+  // إنشاء جناح (POST /exhibitor/create-wing)
+  static Future<Response?> createWing(Map<String, dynamic> data, String token) async {
+    // الحقول مهمة جدا وتتبع مودل Section:
+    // name, departments_id, exhibitor_id
+    return postWithToken('/exhibitor/create-wing', data, token);
+  }
+
+  // جلب الأقسام (GET /exhibitor/departments)
+  static Future<Response?> getDepartmentsForExhibitor() async {
+    return get('/exhibitor/departments');
+  }
+
+  // تتبع الطلب (GET /exhibitor/track-request) - تحتاج توكن
+  static Future<Response?> trackRequest(String token) async {
+    return getWithToken('/exhibitor/track-request', token);
+  }
+
+  // دفع الدفعة الأولى (POST /exhibitor/pay-initial)
+  static Future<Response?> payInitial(Map<String, dynamic> data, String token) async {
+    return postWithToken('/exhibitor/pay-initial', data, token);
+  }
+
+  // دفع الدفعة النهائية (POST /exhibitor/pay-final)
+  static Future<Response?> payFinal(Map<String, dynamic> data, String token) async {
+    return postWithToken('/exhibitor/pay-final', data, token);
+  }
 }

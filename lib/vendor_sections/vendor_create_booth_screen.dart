@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
-/// شاشة إنشاء جناح جديد بعد إتمام الدفع النهائي
 class VendorCreateBoothScreen extends StatefulWidget {
+  final int exhibitorId; // رقم العارض
+  final int departmentId; // رقم القسم المختار
+
+  VendorCreateBoothScreen({required this.exhibitorId, required this.departmentId});
+
   @override
   _VendorCreateBoothScreenState createState() => _VendorCreateBoothScreenState();
 }
@@ -10,11 +15,22 @@ class _VendorCreateBoothScreenState extends State<VendorCreateBoothScreen> {
   final _formKey = GlobalKey<FormState>();
   String boothName = '';
 
-  /// حفظ بيانات الجناح على السيرفر (يمكن إضافة اتصال API لاحقاً)
-  void submitBooth() {
+  void submitBooth() async {
     if (_formKey.currentState!.validate()) {
-      // بعد الحفظ، يمكن الانتقال لصفحة الجناح
-      Navigator.pushReplacementNamed(context, '/vendor_booth_tasks');
+      final data = {
+        "name": boothName,
+        "departments_id": widget.departmentId,
+        "exhibitor_id": widget.exhibitorId,
+      };
+
+      final response = await ApiService.post('/create-wing', data);
+
+      if (response != null && response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تم إنشاء الجناح بنجاح')));
+        Navigator.pushReplacementNamed(context, '/vendor_booth_tasks');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('حدث خطأ أثناء إنشاء الجناح')));
+      }
     }
   }
 

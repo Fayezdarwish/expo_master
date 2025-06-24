@@ -1,8 +1,7 @@
-import 'package:expo_master/vendor_sections/vendor_request_form.dart';
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import 'vendor_request_form.dart';
 
-/// شاشة عرض الأقسام التي يمكن للعارض التقديم عليها
 class VendorSectionsScreen extends StatefulWidget {
   @override
   _VendorSectionsScreenState createState() => _VendorSectionsScreenState();
@@ -10,6 +9,7 @@ class VendorSectionsScreen extends StatefulWidget {
 
 class _VendorSectionsScreenState extends State<VendorSectionsScreen> {
   List sections = [];
+  bool loading = true;
 
   @override
   void initState() {
@@ -17,13 +17,18 @@ class _VendorSectionsScreenState extends State<VendorSectionsScreen> {
     fetchSections();
   }
 
-  /// جلب الأقسام من السيرفر
   Future<void> fetchSections() async {
     final response = await ApiService.get('/sections');
     if (response != null && response.statusCode == 200) {
       setState(() {
         sections = response.data;
+        loading = false;
       });
+    } else {
+      setState(() {
+        loading = false;
+      });
+      // يمكن عرض رسالة خطأ أو إعادة المحاولة
     }
   }
 
@@ -31,7 +36,9 @@ class _VendorSectionsScreenState extends State<VendorSectionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('الأقسام المتاحة')),
-      body: ListView.builder(
+      body: loading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
         itemCount: sections.length,
         itemBuilder: (context, index) {
           final section = sections[index];

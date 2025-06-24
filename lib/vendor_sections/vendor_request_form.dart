@@ -1,9 +1,8 @@
-import 'package:expo_master/vendor_sections/vendor_initial_payment_screen.dart';
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
 import '../../services/token_storage.dart';
+import 'vendor_initial_payment_screen.dart';
 
-/// شاشة تعبئة نموذج طلب إنشاء جناح في قسم معين
 class VendorRequestForm extends StatefulWidget {
   final int sectionId;
   VendorRequestForm({required this.sectionId});
@@ -18,7 +17,6 @@ class _VendorRequestFormState extends State<VendorRequestForm> {
   String activity = '';
   String contact = '';
 
-  /// إرسال الطلب للسيرفر
   void submitRequest() async {
     if (_formKey.currentState!.validate()) {
       final token = await TokenStorage.getToken() ?? '';
@@ -34,13 +32,11 @@ class _VendorRequestFormState extends State<VendorRequestForm> {
       );
 
       if (response != null && response.statusCode == 200) {
-        // الانتقال لشاشة الدفع الأولى بعد إرسال الطلب
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => VendorInitialPaymentScreen()),
         );
       } else {
-        // عرض خطأ في حال فشل الطلب
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('فشل إرسال الطلب، حاول لاحقاً')),
         );
