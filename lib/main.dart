@@ -8,6 +8,8 @@ import 'package:expo_master/screens_login_and_registar/forgot_password_screen.da
 import 'package:expo_master/screens_login_and_registar/reset_password_screen.dart';
 
 // شاشات المسؤول (Admin)
+import 'Exhibitor/CreateWingPage.dart';
+import 'Exhibitor/SelectDepartmentPage.dart';
 import 'Features/create_department_screen.dart';
 import 'Features/manage_departments_screen.dart';
 import 'Features/sinup_screen_for_manger_section.dart';
@@ -64,6 +66,8 @@ class ExpoMasterApp extends StatelessWidget {
         '/exhibitor/request-form': (context) => ExhibitorRequestFormPage(),
         '/exhibitor/request-status': (context) => RequestStatusPage(),
         '/exhibitor/rent-payment': (context) => RentPaymentPage(),
+        '/exhibitor/CreateWingPage': (context) => CreateWingPage(),
+        '/exhibitor/SelectDepartmentPage': (context) => SelectDepartmentPage(),
 
         // 🌐 الزائر (صفحة مؤقتة)
         '/visitor/home': (context) => const Placeholder(),
