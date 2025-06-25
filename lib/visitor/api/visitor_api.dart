@@ -211,22 +211,19 @@
     }
 
     /// تقديم طلب عارض
-    static Future<Map<String, dynamic>?> submitExhibitorRequest(Map<String, dynamic> requestData) async {
+    static Future<bool> submitExhibitorRequest(Map<String, dynamic> requestData, String token) async {
       try {
-        final token = await TokenStorage.getToken();
-        if (token == null) return null;
-
         final response = await ApiService.postWithToken('/exhibitor/request', requestData, token);
 
         if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
-          return response.data;
+          return true;
         } else {
           print('Submit Exhibitor Request Error: ${response?.statusCode} → ${response?.data}');
         }
       } catch (e) {
         print('Submit Exhibitor Request Exception: $e');
       }
-      return null;
+      return false;
     }
 
     /// حالة طلب العارض

@@ -8,17 +8,16 @@ import 'package:expo_master/screens_login_and_registar/forgot_password_screen.da
 import 'package:expo_master/screens_login_and_registar/reset_password_screen.dart';
 
 // شاشات المسؤول (Admin)
-import 'Exhibitor/CreateWingPage.dart';
-import 'Exhibitor/SelectDepartmentPage.dart';
+
+
+
 import 'Features/create_department_screen.dart';
 import 'Features/manage_departments_screen.dart';
 import 'Features/sinup_screen_for_manger_section.dart';
 import 'Features/welcome_screen.dart';
 
 // شاشات العارض (Exhibitor)
-import 'Exhibitor/ExhibitorRequestFormPage.dart';
-import 'Exhibitor/RentPaymentPage.dart';
-import 'Exhibitor/RequestStatusPage.dart';
+
 
 // شاشات مدير القسم (Section Manager)
 import 'manager/screen/RequestDetailsPage.dart';
@@ -57,21 +56,22 @@ class ExpoMasterApp extends StatelessWidget {
         // 🧑‍💼 مدير القسم
         '/section-manager/home': (context) => const SectionManagerHome(),
         '/section-manager/wings': (context) => const WingListPage(),
-      //  '/section-manager/wings/add': (context) => const AddWingPage(),
-      //  '/section-manager/wings/edit': (context) => const EditWingPage(),
+        // '/section-manager/wings/add': (context) => const AddWingPage(),
+        // '/section-manager/wings/edit': (context) => const EditWingPage(),
         '/section-manager/requests': (context) => const RequestsListPage(),
-      //  '/section-manager/request-details': (context) => const RequestDetailsPage(),
+        // '/section-manager/request-details': (context) => const RequestDetailsPage(),
 
-        // 🏢 العارض
-        '/exhibitor/request-form': (context) => ExhibitorRequestFormPage(),
-        '/exhibitor/request-status': (context) => RequestStatusPage(),
-        '/exhibitor/rent-payment': (context) => RentPaymentPage(),
-        '/exhibitor/CreateWingPage': (context) => CreateWingPage(),
-        '/exhibitor/SelectDepartmentPage': (context) => SelectDepartmentPage(),
+        // 🏢 العارض (Exhibitor)
+
+
+        // منتجات العارض (لو موجودة)
+       // '/exhibitor/add-product': (context) => const AddProductScreen(),
+        //'/exhibitor/my-products': (context) => const MyProductsScreen(),
 
         // 🌐 الزائر (صفحة مؤقتة)
         '/visitor/home': (context) => const Placeholder(),
       },
+
     );
   }
 }
