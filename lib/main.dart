@@ -1,3 +1,5 @@
+import 'package:expo_master/vendor_sections/ExhibitorDepartmentsScreen.dart';
+import 'package:expo_master/vendor_sections/ExhibitorRequestFormScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:expo_master/config/theme.dart';
 
@@ -66,6 +68,8 @@ class ExpoMasterApp extends StatelessWidget {
 
         // شاشات العارض (Exhibitor)
         '/exhibitor/home': (context) =>  VendorSectionsScreen(),
+          '/exhibitorDepartments': (context) => const ExhibitorDepartmentsScreen(),
+          '/exhibitorRequestForm': (context) => const ExhibitorRequestFormScreen(),
         '/VendorInitialPaymentScreen': (context) => VendorInitialPaymentScreen(),
         '/VendorRequestsStatusScreen': (context) => VendorRequestsStatusScreen(),
         '/VendorSectionsScreen': (context) => VendorSectionsScreen(),
