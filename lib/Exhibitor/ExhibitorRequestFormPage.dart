@@ -40,14 +40,13 @@ class _ExhibitorRequestFormPageState extends State<ExhibitorRequestFormPage> {
       setState(() => isLoading = false);
       return;
     }
+    final response = await VisitorApi.submitExhibitorRequest({
+      'exhibitionName': exhibitionName,
+      'contactPhone': contactPhone,
+      'notes': notes,
+      'sectionId': selectedDepartment['id'],
+    });
 
-    final response = await VisitorApi.submitExhibitorRequest(
-      exhibitionName: exhibitionName,
-      contactPhone: contactPhone,
-      notes: notes,
-      sectionId: selectedDepartment['id'],
-      token: token,
-    );
 
     setState(() {
       isLoading = false;

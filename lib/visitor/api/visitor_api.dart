@@ -2,7 +2,7 @@ import '../../services/api_service.dart';
 import '../../services/token_storage.dart';
 
 class VisitorApi {
-  /// دالة تسجيل الدخول
+  /// تسجيل الدخول
   static Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
       final response = await ApiService.post('/auth/login', {
@@ -10,11 +10,8 @@ class VisitorApi {
         'password': password,
       });
 
-      // التأكد من نجاح الطلب
       if (response != null && response.statusCode == 200) {
         final data = response.data;
-
-        // استخراج التوكن ونوع المستخدم
         final String token = data['token'] as String;
         final int userType = data['userType'] as int;
 
@@ -22,21 +19,17 @@ class VisitorApi {
         await TokenStorage.saveToken(token);
         await TokenStorage.saveUserType(userType);
 
-        return {
-          'token': token,
-          'userType': userType,
-        };
+        return {'token': token, 'userType': userType};
       } else {
         print('Login Error: ${response?.statusCode} → ${response?.data}');
-        return null;
       }
     } catch (e) {
       print('Login Exception: $e');
-      return null;
     }
+    return null;
   }
 
-  /// دالة تسجيل مستخدم جديد
+  /// تسجيل مستخدم جديد
   static Future<Map<String, dynamic>?> register(
       String name, String email, String password, int userType) async {
     try {
@@ -52,15 +45,14 @@ class VisitorApi {
         return response.data;
       } else {
         print('Register Error: ${response?.statusCode} → ${response?.data}');
-        return null;
       }
     } catch (e) {
       print('Register Exception: $e');
-      return null;
     }
+    return null;
   }
 
-  /// تسجيل مدير (مع توكن مصادقة)
+  /// تسجيل مدير جديد (يتطلب توكن)
   static Future<int?> registerManager(String name, String email, String password) async {
     try {
       final token = await TokenStorage.getToken();
@@ -87,15 +79,13 @@ class VisitorApi {
       } else {
         print('Register Manager Error: ${response?.statusCode} → ${response?.data}');
       }
-
-      return null;
     } catch (e) {
       print('Register Manager Exception: $e');
-      return null;
     }
+    return null;
   }
 
-  /// إنشاء قسم جديد (مع توكن)
+  /// إنشاء قسم جديد (يتطلب توكن)
   static Future<Map<String, dynamic>?> createDepartment({
     required String name,
     required String description,
@@ -123,12 +113,11 @@ class VisitorApi {
         return response.data;
       } else {
         print('Create Department Error: ${response?.statusCode} → ${response?.data}');
-        return null;
       }
     } catch (e) {
       print('Create Department Exception: $e');
-      return null;
     }
+    return null;
   }
 
   /// طلب إعادة تعيين كلمة المرور (لا يتطلب توكن)
@@ -142,22 +131,20 @@ class VisitorApi {
         return response.data;
       } else {
         print('Forgot Password Error: ${response?.statusCode} → ${response?.data}');
-        return null;
       }
     } catch (e) {
       print('Forgot Password Exception: $e');
-      return null;
     }
+    return null;
   }
 
-  /// دالة إعادة تعيين كلمة المرور (باستخدام دالة PUT بدون توكن)
+  /// إعادة تعيين كلمة المرور (PUT بدون توكن)
   static Future<Map<String, dynamic>?> resetPassword({
     required String email,
     required String newPassword,
     required String confirmPassword,
   }) async {
     try {
-      // هنا نستخدم ApiService.put لأنه دالة PUT بدون توكن
       final response = await ApiService.put('/auth/reset-password', {
         'email': email,
         'newPassword': newPassword,
@@ -168,42 +155,51 @@ class VisitorApi {
         return response.data;
       } else {
         print('Reset Password Error: ${response?.statusCode} → ${response?.data}');
-        return null;
       }
     } catch (e) {
       print('Reset Password Exception: $e');
-      return null;
-    }
-  }
-
-  /// جلب جميع الأقسام (مع توكن)
-  static Future<List<Map<String, dynamic>>?> getAllDepartments() async {
-    final token = await TokenStorage.getToken();
-    if (token == null) {
-      print('Get All Departments Error: No token found');
-      return null;
-    }
-    final response = await ApiService.getWithToken('/departments', token);
-
-    if (response != null && response.statusCode == 200) {
-      // نتوقع قائمة الأقسام في data['departments']
-      return List<Map<String, dynamic>>.from(response.data['departments']);
     }
     return null;
   }
 
-  /// حذف قسم معين (مع توكن)
-  static Future<bool> deleteDepartment(int id) async {
-    final token = await TokenStorage.getToken();
-    if (token == null) {
-      print('Delete Department Error: No token found');
-      return false;
+  /// جلب جميع الأقسام (يتطلب توكن)
+  static Future<List<Map<String, dynamic>>?> getAllDepartments() async {
+    try {
+      final token = await TokenStorage.getToken();
+      if (token == null) {
+        print('Get All Departments Error: No token found');
+        return null;
+      }
+      final response = await ApiService.getWithToken('/departments', token);
+
+      if (response != null && response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(response.data['departments']);
+      } else {
+        print('Get All Departments Error: ${response?.statusCode} → ${response?.data}');
+      }
+    } catch (e) {
+      print('Get All Departments Exception: $e');
     }
-    final response = await ApiService.deleteWithToken('/departments/$id', token);
-    return response != null && response.statusCode == 200;
+    return null;
   }
 
-  /// تحديث بيانات قسم معين (مع توكن)
+  /// حذف قسم معين (يتطلب توكن)
+  static Future<bool> deleteDepartment(int id) async {
+    try {
+      final token = await TokenStorage.getToken();
+      if (token == null) {
+        print('Delete Department Error: No token found');
+        return false;
+      }
+      final response = await ApiService.deleteWithToken('/departments/$id', token);
+      return response != null && response.statusCode == 200;
+    } catch (e) {
+      print('Delete Department Exception: $e');
+      return false;
+    }
+  }
+
+  /// تحديث بيانات قسم معين (يتطلب توكن)
   static Future<bool> updateDepartment({
     required int id,
     required String name,
@@ -238,7 +234,7 @@ class VisitorApi {
     }
   }
 
-  /// جلب الأقسام (مكررة مع getAllDepartments لكن مع بعض المعالجة الإضافية)
+  /// جلب الأقسام (مكررة مع getAllDepartments لكن مع دعم أكثر لهيكل البيانات)
   static Future<List<Map<String, dynamic>>?> fetchDepartments() async {
     try {
       final token = await TokenStorage.getToken();
@@ -257,11 +253,47 @@ class VisitorApi {
           return List<Map<String, dynamic>>.from(data);
         }
       }
-      return null;
     } catch (e) {
       print('Fetch Departments Exception: $e');
+    }
+    return null;
+  }
+  static Future<Map<String, dynamic>?> submitExhibitorRequest(Map<String, dynamic> requestData) async {
+    try {
+      final token = await TokenStorage.getToken();
+      if (token == null) {
+        print('Submit Exhibitor Request Error: No token found');
+        return null;
+      }
+
+      final response = await ApiService.postWithToken('/exhibitor/request', requestData, token);
+
+      if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
+        return response.data;
+      } else {
+        print('Submit Exhibitor Request Error: ${response?.statusCode} → ${response?.data}');
+        return null;
+      }
+    } catch (e) {
+      print('Submit Exhibitor Request Exception: $e');
       return null;
     }
   }
+  /// جلب حالة طلب العارض (يتطلب توكن)
+  static Future<Map<String, dynamic>?> getExhibitorRequestStatus(int requestId, String token) async {
+    try {
+      final response = await ApiService.getWithToken('/exhibitor/request/$requestId', token);
+
+      if (response != null && response.statusCode == 200) {
+        return response.data;
+      } else {
+        print('Get Exhibitor Request Status Error: ${response?.statusCode} → ${response?.data}');
+      }
+    } catch (e) {
+      print('Get Exhibitor Request Status Exception: $e');
+    }
+    return null;
+  }
+
 
 }
