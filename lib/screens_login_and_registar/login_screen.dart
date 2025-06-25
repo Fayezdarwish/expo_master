@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacementNamed(context, '/exhibitor/home');
           break;
         case 1:
-          Navigator.pushReplacementNamed(context, '/visitor/home');
+          Navigator.pushReplacementNamed(context, '/VendorCreateBoothScreen');
           break;
         default:
           showMessage("نوع الحساب غير معروف");
