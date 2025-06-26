@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacementNamed(context, '/section-manager/home');
           break;
         case 2:
-          Navigator.pushReplacementNamed(context, '/exhibitor/select-department');
+          Navigator.pushReplacementNamed(context, 'Exhibitor/ExhibitorHome.dart');
           break;
         case 1:
           Navigator.pushReplacementNamed(context, '/VendorCreateBoothScreen');
