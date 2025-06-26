@@ -29,7 +29,7 @@ class _BoothProductsScreenState extends State<BoothProductsScreen> with SingleTi
     _controller = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
-    );
+    );//
   }
 
   Future<void> fetchProducts() async {
