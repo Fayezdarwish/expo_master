@@ -1,3 +1,4 @@
+// ✅ CreateWingScreen.dart
 import 'package:flutter/material.dart';
 
 class CreateWingScreen extends StatefulWidget {
@@ -14,10 +15,7 @@ class _CreateWingScreenState extends State<CreateWingScreen> {
   void submit() {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم إنشاء الجناح'),
-          backgroundColor: Colors.green,
-        ),
+        const SnackBar(content: Text('تم إنشاء الجناح'), backgroundColor: Colors.green),
       );
       Future.delayed(const Duration(milliseconds: 600), () {
         Navigator.pushReplacementNamed(context, '/exhibitor/home');

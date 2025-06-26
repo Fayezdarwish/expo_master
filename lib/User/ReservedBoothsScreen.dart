@@ -3,7 +3,6 @@ import '../services/api_service.dart';
 import '../services/token_storage.dart';
 import 'BoothProductsScreen.dart';
 
-
 class ReservedBoothsScreen extends StatefulWidget {
   final int departmentId;
 
@@ -51,14 +50,15 @@ class _ReservedBoothsScreenState extends State<ReservedBoothsScreen> {
           : ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: booths.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, __) => const SizedBox(height: 14),
         itemBuilder: (context, index) {
           final booth = booths[index];
           return Card(
+            elevation: 6,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: ListTile(
-              title: Text(booth['name']),
-              trailing: const Icon(Icons.arrow_forward_ios),
+              title: Text(booth['name'], style: Theme.of(context).textTheme.titleLarge),
+              trailing: const Icon(Icons.arrow_forward_ios, color: Colors.green),
               onTap: () {
                 Navigator.push(
                   context,

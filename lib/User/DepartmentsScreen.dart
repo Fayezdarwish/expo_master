@@ -21,7 +21,6 @@ class _DepartmentsScreenState extends State<DepartmentsScreen> with SingleTicker
     super.initState();
     fetchDepartments();
 
-    // Animation setup for fade-in
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -36,13 +35,14 @@ class _DepartmentsScreenState extends State<DepartmentsScreen> with SingleTicker
   }
 
   Future<void> fetchDepartments() async {
+    // فرضًا الزائر يحصل على توكن مؤقت أو يمكن حذف شرط التوكن لو API يسمح
     final token = await TokenStorage.getToken();
     if (token == null) {
       setState(() => isLoading = false);
-      return;
+      // يمكن هنا توليد توكن مؤقت أو السماح بدون توكن حسب النظام
     }
 
-    final response = await ApiService.getWithToken('/visitor/departments', token);
+    final response = await ApiService.getWithToken('/visitor/departments', token ?? '');
     if (response != null && response.statusCode == 200) {
       setState(() {
         departments = response.data['departments'];

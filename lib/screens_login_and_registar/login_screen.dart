@@ -34,11 +34,17 @@ class _LoginScreenState extends State<LoginScreen> {
         case 3:
           Navigator.pushReplacementNamed(context, '/section-manager/home');
           break;
-        case 2:
-          Navigator.pushReplacementNamed(context, '/exhibitor/home');
+        case 2: // العارض
+          final hasCompletedAllSteps = result['hasCompletedAllSteps'] ?? false;
+
+          if (!hasCompletedAllSteps) {
+            Navigator.pushReplacementNamed(context, '/exhibitor/home');
+          } else {
+            Navigator.pushReplacementNamed(context, '/exhibitor/dashboard');
+          }
           break;
         case 1:
-          Navigator.pushReplacementNamed(context, '/user/ReservedBoothsScreen');
+          Navigator.pushReplacementNamed(context, '/user/DepartmentsScreen');
           break;
         default:
           showMessage("نوع الحساب غير معروف");

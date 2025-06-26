@@ -1,3 +1,4 @@
+// ✅ SubmitRequestScreen.dart
 import 'package:flutter/material.dart';
 
 class SubmitRequestScreen extends StatefulWidget {
@@ -22,9 +23,13 @@ class _SubmitRequestScreenState extends State<SubmitRequestScreen> {
 
   void submit() {
     if (_formKey.currentState!.validate() && departmentId != null) {
-      // يمكن هنا إرسال البيانات إلى الباك
-      Navigator.pushNamed(context, '/exhibitor/payment');
-    } else if (departmentId == null) {
+      Navigator.pushNamed(context, '/exhibitor/payment', arguments: {
+        'exhibitionName': exhibitionName,
+        'contactPhone': contactPhone,
+        'notes': notes,
+        'departmentId': departmentId,
+      });
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('يرجى اختيار القسم')),
       );
@@ -42,7 +47,7 @@ class _SubmitRequestScreenState extends State<SubmitRequestScreen> {
           child: ListView(
             children: [
               TextFormField(
-                decoration: const InputDecoration(labelText: 'اسم المعرض'),
+                decoration: const InputDecoration(labelText: 'اسم العارض'),
                 onChanged: (value) => exhibitionName = value,
                 validator: (value) =>
                 value!.isEmpty ? 'يرجى إدخال اسم المعرض' : null,

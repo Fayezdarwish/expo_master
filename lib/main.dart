@@ -8,8 +8,7 @@ import 'package:expo_master/screens_login_and_registar/forgot_password_screen.da
 import 'package:expo_master/screens_login_and_registar/reset_password_screen.dart';
 
 // شاشات المسؤول (Admin)
-
-
+import 'Exhibitor/select_department_screen.dart';
 import 'Features/create_department_screen.dart';
 import 'Features/manage_departments_screen.dart';
 import 'Features/sinup_screen_for_manger_section.dart';
@@ -68,16 +67,20 @@ class ExpoMasterApp extends StatelessWidget {
         '/section-manager/wings': (context) => const WingListPage(),
         '/section-manager/requests': (context) => const RequestsListPage(),
 
-        // 🏢 العارض
+        // 🏢 العارض (Exhibitor)
         '/exhibitor/home': (context) => const ExhibitorHomeScreen(),
         '/exhibitor/submit-request': (context) => const SubmitRequestScreen(),
         '/exhibitor/payment': (context) => const PaymentScreen(),
         '/exhibitor/create-wing': (context) => const CreateWingScreen(),
         '/exhibitor/add-product': (context) => const AddProductScreen(),
         '/exhibitor/my-products': (context) => const MyProductsScreen(),
+        '/exhibitor/select-department': (context) => const SelectDepartmentScreen(),
+        '/exhibitor/dashboard': (context) => const MyProductsScreen(), // اختياري: يمكن تغيير الوجهة
 
-        // 🌐 الزائر (صفحة مؤقتة)
-        '/user/ReservedBoothsScreen': (context) => const DepartmentsScreen(),
+        // 🌐 الزائر
+        '/user/DepartmentsScreen': (context) => const DepartmentsScreen(),
+       // '/user/ReservedBoothsScreen': (context) => const ReservedBoothsScreen(),
+        '/user/DepartmentsScreen': (context) => const DepartmentsScreen(), // شاشة ترحيبية للزائر
       },
     );
   }

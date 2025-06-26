@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/token_storage.dart';
+import 'ReservedBoothsScreen.dart';
 
 class TicketPurchaseScreen extends StatefulWidget {
   final int departmentId;
@@ -21,11 +22,13 @@ class TicketPurchaseScreen extends StatefulWidget {
 class _TicketPurchaseScreenState extends State<TicketPurchaseScreen> {
   bool isLoading = false;
   String? resultMessage;
+  bool ticketPurchased = false;
 
   Future<void> purchaseTicket() async {
     setState(() {
       isLoading = true;
       resultMessage = null;
+      ticketPurchased = false;
     });
 
     final token = await TokenStorage.getToken();
@@ -50,10 +53,20 @@ class _TicketPurchaseScreenState extends State<TicketPurchaseScreen> {
       isLoading = false;
       if (response != null && response.statusCode == 200) {
         resultMessage = 'تم شراء التذكرة بنجاح!';
+        ticketPurchased = true;
       } else {
         resultMessage = 'فشل شراء التذكرة، حاول مرة أخرى.';
       }
     });
+  }
+
+  void goToReservedBooths() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReservedBoothsScreen(departmentId: widget.departmentId),
+      ),
+    );
   }
 
   @override
@@ -91,6 +104,18 @@ class _TicketPurchaseScreenState extends State<TicketPurchaseScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
+              if (ticketPurchased) ...[
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: goToReservedBooths,
+                  child: const Text('عرض الأجنحة المحجوزة'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(180, 50),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                ),
+              ]
             ],
           ),
         ),

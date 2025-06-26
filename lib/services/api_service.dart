@@ -1,8 +1,9 @@
+// api_service.dart
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/api_constants.dart';
 
 class ApiService {
-  // إنشاء كائن Dio مع الإعدادات الأساسية (Base URL، المهلات، الهيدر)
   static final Dio _dio = Dio(BaseOptions(
     baseUrl: baseUrl,
     connectTimeout: const Duration(seconds: 50),
@@ -13,7 +14,6 @@ class ApiService {
     },
   ));
 
-  /// دالة GET بدون توكن
   static Future<Response?> get(String url) async {
     try {
       final response = await _dio.get(url);
@@ -24,7 +24,6 @@ class ApiService {
     }
   }
 
-  /// دالة POST بدون توكن
   static Future<Response?> post(String url, Map<String, dynamic> data) async {
     try {
       final response = await _dio.post(url, data: data);
@@ -35,7 +34,6 @@ class ApiService {
     }
   }
 
-  /// دالة POST مع توكن (للطلبات التي تتطلب توثيق)
   static Future<Response?> postWithToken(String url, Map<String, dynamic> data, String token) async {
     try {
       final response = await _dio.post(
@@ -50,7 +48,6 @@ class ApiService {
     }
   }
 
-  /// دالة GET مع توكن
   static Future<Response?> getWithToken(String url, String token) async {
     try {
       final response = await _dio.get(
@@ -64,7 +61,6 @@ class ApiService {
     }
   }
 
-  /// دالة PUT بدون توكن (مهمة لـ resetPassword اللي ما فيها توكن)
   static Future<Response?> put(String url, Map<String, dynamic> data) async {
     try {
       final response = await _dio.put(url, data: data);
@@ -75,7 +71,6 @@ class ApiService {
     }
   }
 
-  /// دالة PUT مع توكن (تحديث بيانات مثلاً)
   static Future<Response?> putWithToken(String url, Map<String, dynamic> data, String token) async {
     try {
       final response = await _dio.put(
@@ -90,7 +85,6 @@ class ApiService {
     }
   }
 
-  /// دالة DELETE مع توكن
   static Future<Response?> deleteWithToken(String url, String token) async {
     try {
       final response = await _dio.delete(
@@ -103,4 +97,42 @@ class ApiService {
       return null;
     }
   }
+
+  // ✅ Get token from SharedPreferences
+  static Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
+  // ✅ Get all departments from API
+  static Future<List<Map<String, dynamic>>?> getAllDepartments() async {
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        print("Token is null");
+        return null;
+      }
+
+      final response = await getWithToken('/departments', token);
+      if (response?.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(response!.data['departments']);
+      } else {
+        print('Get Departments Error: ${response?.statusCode} → ${response?.data}');
+      }
+    } catch (e) {
+      print('Get Departments Exception: $e');
+    }
+    return null;
+  }
+  static Future<Response?> getRequest(String endpoint, {Map<String, String>? headers}) async {
+    try {
+      final response = await _dio.get(endpoint, options: Options(headers: headers));
+      return response;
+    } catch (e) {
+      print('GET error: $e');
+      return null;
+    }
+  }
+
+
 }

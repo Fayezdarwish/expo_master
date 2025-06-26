@@ -15,7 +15,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final confirmPasswordController = TextEditingController();
 
   bool isLoading = false;
-  int userType = 1; // 1 = زائر (افتراضي), 2 = عارض
+  int userType = 1; // 1 = زائر, 2 = عارض
 
   void handleRegister() async {
     final name = nameController.text.trim();
@@ -41,7 +41,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (result != null) {
       showMessage("تم إنشاء الحساب بنجاح", isSuccess: true);
-      Navigator.pop(context);
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (userType == 2) {
+        Navigator.pushReplacementNamed(context, '/exhibitor/select-department');
+      } else if (userType == 1) {
+        Navigator.pushReplacementNamed(context, '/user/DepartmentsScreen'); // شاشة ترحيب الزائر
+      }
     } else {
       showMessage("حدث خطأ أثناء إنشاء الحساب");
     }

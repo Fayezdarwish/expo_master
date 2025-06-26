@@ -21,7 +21,7 @@ class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
 
   Future<void> fetchAllDepartments() async {
     setState(() => isLoading = true);
-    final data = await VisitorApi.getAllDepartments(); // ✅ تم التعديل هنا
+    final data = await VisitorApi.getAllDepartments();
     if (data != null) departments = data;
     setState(() => isLoading = false);
   }
