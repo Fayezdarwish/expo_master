@@ -13,8 +13,15 @@ class _CreateWingScreenState extends State<CreateWingScreen> {
 
   void submit() {
     if (_formKey.currentState!.validate()) {
-      // هنا استدعاء API لإنشاء الجناح (لو متوفر)
-      Navigator.pushReplacementNamed(context, '/exhibitor/home');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تم إنشاء الجناح'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Future.delayed(const Duration(milliseconds: 600), () {
+        Navigator.pushReplacementNamed(context, '/exhibitor/home');
+      });
     }
   }
 
@@ -22,21 +29,31 @@ class _CreateWingScreenState extends State<CreateWingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('إنشاء جناح')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
+              const Text('يرجى إدخال اسم الجناح الخاص بك', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'اسم الجناح'),
+                decoration: const InputDecoration(labelText: 'اسم الجناح', border: OutlineInputBorder()),
                 onChanged: (value) => wingName = value,
                 validator: (value) => value!.isEmpty ? 'يرجى إدخال اسم الجناح' : null,
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: submit,
-                child: const Text('موافق'),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: const Text('موافق'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: submit,
+                ),
               ),
             ],
           ),

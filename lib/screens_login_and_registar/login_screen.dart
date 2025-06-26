@@ -35,10 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacementNamed(context, '/section-manager/home');
           break;
         case 2:
-          Navigator.pushReplacementNamed(context, 'Exhibitor/ExhibitorHome.dart');
+          Navigator.pushReplacementNamed(context, '/exhibitor/home');
           break;
         case 1:
-          Navigator.pushReplacementNamed(context, '/VendorCreateBoothScreen');
+          Navigator.pushReplacementNamed(context, '/user/ReservedBoothsScreen');
           break;
         default:
           showMessage("نوع الحساب غير معروف");
@@ -99,6 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 16),
+
             TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/forgot-password');

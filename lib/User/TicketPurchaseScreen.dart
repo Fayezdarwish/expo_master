@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/token_storage.dart';
-import 'ReservedBoothsScreen.dart';
-
 
 class TicketPurchaseScreen extends StatefulWidget {
   final int departmentId;
@@ -22,52 +20,40 @@ class TicketPurchaseScreen extends StatefulWidget {
 
 class _TicketPurchaseScreenState extends State<TicketPurchaseScreen> {
   bool isLoading = false;
+  String? resultMessage;
 
-  Future<void> buyTicket() async {
-    setState(() => isLoading = true);
+  Future<void> purchaseTicket() async {
+    setState(() {
+      isLoading = true;
+      resultMessage = null;
+    });
 
     final token = await TokenStorage.getToken();
     if (token == null) {
-      setState(() => isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('يجب تسجيل الدخول أولاً')));
+      setState(() {
+        isLoading = false;
+        resultMessage = 'لم يتم العثور على توكن المستخدم';
+      });
       return;
     }
 
-    final visitorData = {
-      "visitorName": "اسم الزائر",
-      "visitorEmail": "email@example.com",
-      "departmentId": widget.departmentId,
-    };
+    final response = await ApiService.postWithToken(
+      '/visitor/purchase-ticket',
+      {
+        'department_id': widget.departmentId,
+        'section_id': widget.sectionId,
+      },
+      token,
+    );
 
-    final response = await ApiService.postWithToken('/visitor/buy-ticket', visitorData, token);
-
-    setState(() => isLoading = false);
-
-    if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('تم شراء التذكرة'),
-          content: Text('لقد تم شراء التذكرة للقسم: ${widget.sectionName}'),
-          actions: [
-            TextButton(
-              child: const Text('الأجنحة المحجوزة'),
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ReservedBoothsScreen(departmentId: widget.departmentId),
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('فشل في شراء التذكرة')));
-    }
+    setState(() {
+      isLoading = false;
+      if (response != null && response.statusCode == 200) {
+        resultMessage = 'تم شراء التذكرة بنجاح!';
+      } else {
+        resultMessage = 'فشل شراء التذكرة، حاول مرة أخرى.';
+      }
+    });
   }
 
   @override
@@ -76,25 +62,37 @@ class _TicketPurchaseScreenState extends State<TicketPurchaseScreen> {
       appBar: AppBar(title: Text('شراء تذكرة - ${widget.sectionName}')),
       body: Padding(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'هل ترغب في شراء تذكرة للقسم "${widget.sectionName}"؟',
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: isLoading ? null : buyTicket,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (resultMessage != null)
+                Text(
+                  resultMessage!,
+                  style: TextStyle(
+                    color: resultMessage!.contains('نجاح') ? Colors.green : Colors.red,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: isLoading ? null : purchaseTicket,
                 child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('شراء التذكرة'),
+                    ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                )
+                    : const Text('شراء تذكرة'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(180, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

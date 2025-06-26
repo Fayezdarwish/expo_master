@@ -12,39 +12,46 @@ class RequestDetailsPage extends StatefulWidget {
 
 class _RequestDetailsPageState extends State<RequestDetailsPage> {
   final TextEditingController reasonController = TextEditingController();
+  bool isProcessing = false;
 
   Future<void> acceptRequest() async {
-    await ApiService.postWithToken(
-      '/requests/${widget.request['id']}/accept',
-      {},
-      'YOUR_TOKEN', // بدّلها بالتوكن
-    );
+    setState(() => isProcessing = true);
+    try {
+      await ApiService.postWithToken(
+        '/requests/${widget.request['id']}/accept',
+        {},
+        'YOUR_TOKEN',
+      );
 
-    // إذا عندك API لإرسال الإيميل
-    // await ApiService.sendEmail(
-    //   widget.request['email'],
-    //   'تم قبول طلبك. يرجى إتمام الدفعة النهائية.',
-    // );
-
-    Navigator.pop(context);
+      if (mounted) Navigator.pop(context, true);
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('حدث خطأ أثناء قبول الطلب')),
+      );
+    } finally {
+      setState(() => isProcessing = false);
+    }
   }
 
   Future<void> rejectRequest() async {
-    final reason = reasonController.text;
+    final reason = reasonController.text.trim();
+    setState(() => isProcessing = true);
 
-    await ApiService.postWithToken(
-      '/requests/${widget.request['id']}/reject',
-      {'reason': reason},
-      'YOUR_TOKEN',
-    );
+    try {
+      await ApiService.postWithToken(
+        '/requests/${widget.request['id']}/reject',
+        {'reason': reason},
+        'YOUR_TOKEN',
+      );
 
-    // إذا عندك API لإرسال الإيميل
-    // await ApiService.sendEmail(
-    //   widget.request['email'],
-    //   'نأسف، تم رفض طلبك. السبب: $reason',
-    // );
-
-    Navigator.pop(context);
+      if (mounted) Navigator.pop(context, true);
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('حدث خطأ أثناء رفض الطلب')),
+      );
+    } finally {
+      setState(() => isProcessing = false);
+    }
   }
 
   @override
@@ -55,35 +62,62 @@ class _RequestDetailsPageState extends State<RequestDetailsPage> {
       appBar: AppBar(title: const Text('تفاصيل الطلب')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: isProcessing
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('الاسم: ${req['name']}'),
-            Text('البريد: ${req['email']}'),
+            Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(req['name']),
+                subtitle: Text(req['email']),
+              ),
+            ),
             const SizedBox(height: 20),
             TextField(
               controller: reasonController,
-              decoration: const InputDecoration(
+              maxLines: 3,
+              decoration: InputDecoration(
                 labelText: 'سبب الرفض (اختياري)',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                prefixIcon: const Icon(Icons.note_alt_outlined),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.check_circle_outline),
+                    label: const Text('قبول'),
                     onPressed: acceptRequest,
-                    child: const Text('قبول'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.cancel_outlined),
+                    label: const Text('رفض'),
                     onPressed: rejectRequest,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: Colors.redAccent,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    child: const Text('رفض'),
                   ),
                 ),
               ],

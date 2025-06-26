@@ -17,26 +17,12 @@ class _SubmitRequestScreenState extends State<SubmitRequestScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (departmentId == null) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args != null && args is int) {
-        departmentId = args;
-      }
-    }
+    departmentId ??= ModalRoute.of(context)?.settings.arguments as int?;
   }
 
   void submit() {
     if (_formKey.currentState!.validate() && departmentId != null) {
-      // إرسال البيانات للباك
-      // نموذج إرسال البيانات:
-      /*
-      {
-        "exhibitionName": exhibitionName,
-        "departmentId": departmentId,
-        "contactPhone": contactPhone,
-        "notes": notes
-      }
-      */
+      // يمكن هنا إرسال البيانات إلى الباك
       Navigator.pushNamed(context, '/exhibitor/payment');
     } else if (departmentId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -61,6 +47,7 @@ class _SubmitRequestScreenState extends State<SubmitRequestScreen> {
                 validator: (value) =>
                 value!.isEmpty ? 'يرجى إدخال اسم المعرض' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'رقم الهاتف'),
                 keyboardType: TextInputType.phone,
@@ -68,15 +55,17 @@ class _SubmitRequestScreenState extends State<SubmitRequestScreen> {
                 validator: (value) =>
                 value!.isEmpty ? 'يرجى إدخال رقم الهاتف' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'ملاحظات'),
                 maxLines: 3,
                 onChanged: (value) => notes = value,
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
                 onPressed: submit,
-                child: const Text('تثبيت الطلب'),
+                icon: const Icon(Icons.check_circle),
+                label: const Text('تثبيت الطلب'),
               ),
             ],
           ),

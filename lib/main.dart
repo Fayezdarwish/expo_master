@@ -16,6 +16,12 @@ import 'Features/sinup_screen_for_manger_section.dart';
 import 'Features/welcome_screen.dart';
 
 // شاشات مدير القسم (Section Manager)
+import 'User/BoothProductsScreen.dart';
+import 'User/DepartmentsScreen.dart';
+import 'User/ReservedBoothsScreen.dart';
+import 'User/SectionsScreen.dart';
+import 'User/TicketPurchaseScreen.dart';
+import 'User/VisitorSectionSelectionScreen.dart';
 import 'manager/screen/RequestDetailsPage.dart';
 import 'manager/screen/section_manager_home.dart';
 import 'manager/screen/wing_list_page.dart';
@@ -71,7 +77,7 @@ class ExpoMasterApp extends StatelessWidget {
         '/exhibitor/my-products': (context) => const MyProductsScreen(),
 
         // 🌐 الزائر (صفحة مؤقتة)
-        '/visitor/home': (context) => const Placeholder(),
+        '/user/ReservedBoothsScreen': (context) => const DepartmentsScreen(),
       },
     );
   }

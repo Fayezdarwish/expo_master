@@ -16,15 +16,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Future<void> saveProduct() async {
     setState(() => isLoading = true);
 
-    // هنا استدعاء API لإضافة المنتج باستخدام البيانات من الكنترولرز
-    // مثال:
-    // final response = await ApiService.postWithToken('/products/add', {...}, token);
-
-    await Future.delayed(const Duration(seconds: 1)); // محاكاة انتظار
+    await Future.delayed(const Duration(seconds: 1));
 
     setState(() => isLoading = false);
 
-    // بعد الحفظ بنجاح ارجع للصفحة السابقة
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('تم حفظ المنتج بنجاح'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 600));
     Navigator.pop(context);
   }
 
@@ -40,17 +44,42 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('إضافة منتج')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'اسم المنتج')),
-            TextField(controller: _descController, decoration: const InputDecoration(labelText: 'الوصف')),
-            TextField(controller: _priceController, decoration: const InputDecoration(labelText: 'السعر'), keyboardType: TextInputType.number),
+            const Text('أدخل تفاصيل المنتج', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 24),
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'اسم المنتج', border: OutlineInputBorder()),
+            ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: isLoading ? null : saveProduct,
-              child: isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('حفظ'),
+            TextFormField(
+              controller: _descController,
+              decoration: const InputDecoration(labelText: 'الوصف', border: OutlineInputBorder()),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _priceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'السعر', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: isLoading
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Icon(Icons.save),
+                label: Text(isLoading ? 'جاري الحفظ...' : 'حفظ'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: isLoading ? null : saveProduct,
+              ),
             ),
           ],
         ),

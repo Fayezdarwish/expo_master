@@ -30,7 +30,10 @@ class _VisitorSectionSelectionScreenState extends State<VisitorSectionSelectionS
   Future<void> fetchSections() async {
     final token = await TokenStorage.getToken();
     if (token == null) {
-      // Handle unauthenticated user if needed
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('لم يتم العثور على توكن المستخدم')),
+      );
       return;
     }
 
@@ -54,6 +57,8 @@ class _VisitorSectionSelectionScreenState extends State<VisitorSectionSelectionS
       appBar: AppBar(title: Text('الأقسام في ${widget.departmentName}')),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
+          : sections.isEmpty
+          ? const Center(child: Text('لا توجد أقسام متاحة'))
           : Padding(
         padding: const EdgeInsets.all(16),
         child: ListView.separated(

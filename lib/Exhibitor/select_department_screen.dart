@@ -13,17 +13,19 @@ class SelectDepartmentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('اختر القسم')),
-      body: ListView.builder(
+      body: ListView.separated(
         itemCount: departments.length,
+        separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (_, index) {
           final department = departments[index];
           return ListTile(
             title: Text(department['name']),
+            trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
               Navigator.pushNamed(
                 context,
                 '/exhibitor/submit-request',
-                arguments: department['id'], // تمرير id القسم فقط
+                arguments: department['id'],
               );
             },
           );

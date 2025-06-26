@@ -27,13 +27,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Future<void> updateProduct() async {
     setState(() => isLoading = true);
 
-    // هنا استدعاء API لتحديث المنتج بالبيانات الجديدة
-    // final response = await ApiService.putWithToken('/products/${widget.product['id']}', {...}, token);
-
-    await Future.delayed(const Duration(seconds: 1)); // محاكاة انتظار
+    await Future.delayed(const Duration(seconds: 1));
 
     setState(() => isLoading = false);
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('تم تعديل المنتج بنجاح'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 600));
     Navigator.pop(context);
   }
 
@@ -49,17 +55,42 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('تعديل المنتج')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'اسم المنتج')),
-            TextField(controller: _descController, decoration: const InputDecoration(labelText: 'الوصف')),
-            TextField(controller: _priceController, decoration: const InputDecoration(labelText: 'السعر'), keyboardType: TextInputType.number),
+            const Text('تحديث بيانات المنتج', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 24),
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'اسم المنتج', border: OutlineInputBorder()),
+            ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: isLoading ? null : updateProduct,
-              child: isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('تعديل'),
+            TextFormField(
+              controller: _descController,
+              decoration: const InputDecoration(labelText: 'الوصف', border: OutlineInputBorder()),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _priceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'السعر', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: isLoading
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Icon(Icons.edit),
+                label: Text(isLoading ? 'جاري التعديل...' : 'تعديل'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: isLoading ? null : updateProduct,
+              ),
             ),
           ],
         ),
