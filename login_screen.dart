@@ -1,10 +1,12 @@
-import 'package:expo_master/visitor/screens/register_screen.dart';
+import 'package:expo_master/screens_login_and_registar/register_screen.dart';
 import 'package:flutter/material.dart';
-import '../api/visitor_api.dart';
+import '../visitor/api/visitor_api.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -23,20 +25,33 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = false);
 
     if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("مرحبًا ${result['name']}"),
-          backgroundColor: Colors.green,
-        ),
-      );
+      final userType = result['userType'];
+
+      switch (userType) {
+        case 4:
+          Navigator.pushReplacementNamed(context, '/admin/welcome');
+          break;
+        case 3:
+          Navigator.pushReplacementNamed(context, '/section-manager/home');
+          break;
+        case 2:
+          Navigator.pushReplacementNamed(context, '/exhibitor/home');
+          break;
+        case 1:
+          Navigator.pushReplacementNamed(context, '/visitor/home');
+          break;
+        default:
+          showMessage("نوع الحساب غير معروف");
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("فشل تسجيل الدخول"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      showMessage("فشل تسجيل الدخول");
     }
+  }
+
+  void showMessage(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: Colors.red),
+    );
   }
 
   @override
@@ -52,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 16),
             Text("تسجيل الدخول", style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 32),
+
             TextField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
@@ -61,6 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 16),
+
             TextField(
               controller: passwordController,
               obscureText: true,
@@ -70,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 24),
+
             SizedBox(
               width: double.infinity,
               child: isLoading
@@ -81,6 +99,13 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/forgot-password');
+              },
+              child: const Text('نسيت كلمة المرور؟'),
+            ),
+
             TextButton.icon(
               onPressed: () {
                 Navigator.push(
