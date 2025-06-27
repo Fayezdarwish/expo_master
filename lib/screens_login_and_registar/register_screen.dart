@@ -1,172 +1,186 @@
 import 'package:flutter/material.dart';
+import '../services/token_storage.dart';
 import '../visitor/api/visitor_api.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+const SignUpScreen({super.key});
 
-  @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+@override
+State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+final nameController = TextEditingController();
+final emailController = TextEditingController();
+final passwordController = TextEditingController();
+final confirmPasswordController = TextEditingController();
 
-  bool isLoading = false;
-  int userType = 1; // 1 = زائر, 2 = عارض
+bool isLoading = false;
+int userType = 1; // 1 = زائر, 2 = عارض
 
-  void handleRegister() async {
-    final name = nameController.text.trim();
-    final email = emailController.text.trim();
-    final password = passwordController.text;
-    final confirmPassword = confirmPasswordController.text;
+void handleRegister() async {
+final name = nameController.text.trim();
+final email = emailController.text.trim();
+final password = passwordController.text;
+final confirmPassword = confirmPasswordController.text;
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      showMessage("الرجاء تعبئة جميع الحقول");
-      return;
-    }
+if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+showMessage("الرجاء تعبئة جميع الحقول");
+return;
+}
 
-    if (password != confirmPassword) {
-      showMessage("كلمتا المرور غير متطابقتين");
-      return;
-    }
+if (password != confirmPassword) {
+showMessage("كلمتا المرور غير متطابقتين");
+return;
+}
 
-    setState(() => isLoading = true);
+setState(() => isLoading = true);
 
-    final result = await VisitorApi.register(name, email, password, userType);
+final result = await VisitorApi.register(name, email, password, userType);
 
-    setState(() => isLoading = false);
+print("📦 استجابة السيرفر: $result");
 
-    if (result != null) {
-      showMessage("تم إنشاء الحساب بنجاح", isSuccess: true);
-      await Future.delayed(const Duration(seconds: 1));
+setState(() => isLoading = false);
 
-      if (userType == 2) {
-        Navigator.pushReplacementNamed(context, '/exhibitor/select-department');
-      } else if (userType == 1) {
-        Navigator.pushReplacementNamed(context, '/user/DepartmentsScreen'); // شاشة ترحيب الزائر
-      }
-    } else {
-      showMessage("حدث خطأ أثناء إنشاء الحساب");
-    }
-  }
+if (result != null) {
+// ✅ حفظ التوكن و نوع المستخدم بعد التسجيل
+final token = result['token'];
+final user = result['user'];
 
-  void showMessage(String message, {bool isSuccess = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isSuccess ? Colors.green : Colors.red,
-      ),
-    );
-  }
+if (token != null && user != null) {
+await TokenStorage.saveToken(token);
+await TokenStorage.saveUserType(user['userType']);
 
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+showMessage("تم إنشاء الحساب بنجاح", isSuccess: true);
+await Future.delayed(const Duration(seconds: 1));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Expo Master"),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Icon(Icons.person_add_alt_1_rounded, size: 64),
-              const SizedBox(height: 16),
-              Text("إنشاء حساب", style: textTheme.titleLarge),
-              const SizedBox(height: 32),
+if (userType == 2) {
+Navigator.pushReplacementNamed(context, '/exhibitor/select-department');
+} else if (userType == 1) {
+Navigator.pushReplacementNamed(context, '/user/DepartmentsScreen');
+}
+} else {
+showMessage("فشل في حفظ بيانات المستخدم");
+}
+} else {
+showMessage("حدث خطأ أثناء إنشاء الحساب");
+}
+}
 
-              buildTextField(controller: nameController, label: 'الاسم الكامل', icon: Icons.person),
-              const SizedBox(height: 16),
+void showMessage(String message, {bool isSuccess = false}) {
+ScaffoldMessenger.of(context).showSnackBar(
+SnackBar(
+content: Text(message),
+backgroundColor: isSuccess ? Colors.green : Colors.red,
+),
+);
+}
 
-              buildTextField(controller: emailController, label: 'البريد الإلكتروني', icon: Icons.email),
-              const SizedBox(height: 16),
+@override
+Widget build(BuildContext context) {
+final textTheme = Theme.of(context).textTheme;
 
-              buildTextField(controller: passwordController, label: 'كلمة المرور', icon: Icons.lock, isPassword: true),
-              const SizedBox(height: 16),
+return Scaffold(
+appBar: AppBar(
+title: const Text("Expo Master"),
+centerTitle: true,
+),
+body: SafeArea(
+child: SingleChildScrollView(
+padding: const EdgeInsets.all(24.0),
+child: Column(
+crossAxisAlignment: CrossAxisAlignment.center,
+children: [
+const Icon(Icons.person_add_alt_1_rounded, size: 64),
+const SizedBox(height: 16),
+Text("إنشاء حساب", style: textTheme.titleLarge),
+const SizedBox(height: 32),
 
-              buildTextField(controller: confirmPasswordController, label: 'تأكيد كلمة المرور', icon: Icons.lock_outline, isPassword: true),
-              const SizedBox(height: 24),
+buildTextField(controller: nameController, label: 'الاسم الكامل', icon: Icons.person),
+const SizedBox(height: 16),
 
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text("نوع الحساب", style: textTheme.bodyMedium),
-              ),
-              const SizedBox(height: 8),
+buildTextField(controller: emailController, label: 'البريد الإلكتروني', icon: Icons.email),
+const SizedBox(height: 16),
 
-              Row(
-                children: [
-                  Expanded(child: buildAccountTypeCard(1, Icons.person, "زائر")),
-                  const SizedBox(width: 8),
-                  Expanded(child: buildAccountTypeCard(2, Icons.store, "عارض")),
-                ],
-              ),
+buildTextField(controller: passwordController, label: 'كلمة المرور', icon: Icons.lock, isPassword: true),
+const SizedBox(height: 16),
 
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton.icon(
-                  onPressed: handleRegister,
-                  icon: const Icon(Icons.check_circle_outline),
-                  label: const Text("تسجيل"),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+buildTextField(controller: confirmPasswordController, label: 'تأكيد كلمة المرور', icon: Icons.lock_outline, isPassword: true),
+const SizedBox(height: 24),
 
-  Widget buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    bool isPassword = false,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      ),
-    );
-  }
+Align(
+alignment: Alignment.centerRight,
+child: Text("نوع الحساب", style: textTheme.bodyMedium),
+),
+const SizedBox(height: 8),
 
-  Widget buildAccountTypeCard(int type, IconData icon, String label) {
-    final isSelected = userType == type;
+Row(
+children: [
+Expanded(child: buildAccountTypeCard(1, Icons.person, "زائر")),
+const SizedBox(width: 8),
+Expanded(child: buildAccountTypeCard(2, Icons.store, "عارض")),
+],
+),
 
-    return GestureDetector(
-      onTap: () => setState(() => userType = type),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).primaryColor : const Color(0xFF2C2C2E),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? Colors.amber : Colors.grey.shade700,
-            width: 2,
-          ),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: Colors.white),
-            const SizedBox(height: 8),
-            Text(label, style: const TextStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
+const SizedBox(height: 32),
+SizedBox(
+width: double.infinity,
+child: isLoading
+? const Center(child: CircularProgressIndicator())
+    : ElevatedButton.icon(
+onPressed: handleRegister,
+icon: const Icon(Icons.check_circle_outline),
+label: const Text("تسجيل"),
+),
+),
+],
+),
+),
+),
+);
+}
+
+Widget buildTextField({
+required TextEditingController controller,
+required String label,
+required IconData icon,
+bool isPassword = false,
+}) {
+return TextField(
+controller: controller,
+obscureText: isPassword,
+decoration: InputDecoration(
+labelText: label,
+prefixIcon: Icon(icon),
+border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+),
+);
+}
+
+Widget buildAccountTypeCard(int type, IconData icon, String label) {
+final isSelected = userType == type;
+
+return GestureDetector(
+onTap: () => setState(() => userType = type),
+child: Container(
+padding: const EdgeInsets.all(16),
+decoration: BoxDecoration(
+color: isSelected ? Theme.of(context).primaryColor : const Color(0xFF2C2C2E),
+borderRadius: BorderRadius.circular(12),
+border: Border.all(
+color: isSelected ? Colors.amber : Colors.grey.shade700,
+width: 2,
+),
+),
+child: Column(
+children: [
+Icon(icon, color: Colors.white),
+const SizedBox(height: 8),
+Text(label, style: const TextStyle(color: Colors.white)),
+],
+),
+),
+);
+}
 }

@@ -136,6 +136,20 @@ class VisitorApi {
       return false;
     }
   }
+  static Future<List<Map<String, dynamic>>?> getAllDepartmentsForExhibitor() async {
+    final response = await ApiService.get('/departments');
+
+    if (response != null && response.statusCode == 200) {
+      final body = response.data;
+
+      if (body['departments'] != null && body['departments'] is List) {
+        return List<Map<String, dynamic>>.from(body['departments']);
+      }
+    }
+
+    return null;
+  }
+
 
   /// Delete a department
   static Future<bool> deleteDepartment(int id) async {
@@ -150,10 +164,28 @@ class VisitorApi {
       return false;
     }
   }
-  /// Get all departments (for exhibitor)
-  static Future<List<Map<String, dynamic>>?> getAllDepartmentsforexhibitor() async {
+
+  /// Get all departments
+  static Future<List<Map<String, dynamic>>?> getAllDepartments() async {
     try {
       final token = await _getToken();
+      if (token == null) return null;
+
+      final response = await ApiService.getWithToken('/departments', token);
+
+      if (response?.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(response!.data['departments']);
+      } else {
+        print('Get Departments Error: ${response?.statusCode} → ${response?.data}');
+      }
+    } catch (e) {
+      print('Get Departments Exception: $e');
+    }
+    return null;
+  }
+  static Future<List<Map<String, dynamic>>?> getAllDepartmentsforexhibitor() async {
+    try {
+      final token = await TokenStorage.getToken();
       if (token == null) {
         print('Token not found. User not logged in.');
         return null;
@@ -184,33 +216,6 @@ class VisitorApi {
     }
     return null;
   }
-
-  /// Get all departments
-  static Future<List<Map<String, dynamic>>?> getAllDepartments() async {
-    try {
-      final token = await _getToken();
-      if (token == null) return null;
-
-      final response = await ApiService.get('/exhibitor/departments');
-
-      if (response?.statusCode == 200) {
-        print('Response Data: ${response!.data}');
-
-        final data = response.data;
-        if (data is List) {
-          return List<Map<String, dynamic>>.from(data);
-        } else if (data is Map && data.containsKey('departments')) {
-          return List<Map<String, dynamic>>.from(data['departments']);
-        }
-      } else {
-        print('Get Departments Error: ${response?.statusCode} → ${response?.data}');
-      }
-    } catch (e) {
-      print('Get Departments Exception: $e');
-    }
-    return null;
-  }
-
 
   /// Forgot password request
   static Future<Map<String, dynamic>?> forgotPassword(String email) async {
