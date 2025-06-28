@@ -49,7 +49,7 @@
           title: 'Expo Master',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.themeData,
-          initialRoute: '/exhibitor/select-department',
+          initialRoute: '/login',
           routes: {
             // 🔐 المصادقة
             '/login': (context) => const LoginScreen(),
@@ -73,18 +73,25 @@
             '/exhibitor/payment': (context) => const PaymentScreen(),
             '/exhibitor/create-wing': (context) => const CreateWingScreen(),
             '/exhibitor/add-product': (context) => const AddProductScreen(),
-            '/exhibitor/my-products': (context) => const MyProductsScreen(),
+            '/exhibitor/my-products': (context) =>  MyProductsScreen(),
             '/exhibitor/select-department': (context) => const SelectDepartmentScreen(),
-            '/exhibitor/dashboard': (context) => const MyProductsScreen(), // اختياري: يمكن تغيير الوجهة
+            '/exhibitor/MyProductsScreen': (context) =>  MyProductsScreen(), // اختياري: يمكن تغيير الوجهة
 
-            // 🌐 الزائر
-            '/user/DepartmentsScreen': (context) => const DepartmentsScreen(),
-           // '/user/ReservedBoothsScreen': (context) => const ReservedBoothsScreen(),
-            '/user/DepartmentsScreen': (context) => const DepartmentsScreen(), // شاشة ترحيبية للزائر
+            // 🌐 الزائرر
+            //  '/Users/BoothProductsScreen': (context) => const BoothProductsScreen(),
+            '/Users/DepartmentScreen': (context) => const DepartmentScreen(),
+            '/Users/TicketPreviewScreen': (context) => const TicketPreviewScreen(),
+         //   '/Users/SectionsScreen': (context) => const SectionsScreen(),
+
+
+
           },
         );
       }
     }
+
+
+
 
 
 

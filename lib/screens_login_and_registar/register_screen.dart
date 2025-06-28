@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../User/DepartmentsScreen.dart';
 import '../services/token_storage.dart';
 import '../visitor/api/visitor_api.dart';
 
@@ -57,7 +58,11 @@ await Future.delayed(const Duration(seconds: 1));
 if (userType == 2) {
 Navigator.pushReplacementNamed(context, '/exhibitor/select-department');
 } else if (userType == 1) {
-Navigator.pushReplacementNamed(context, '/user/DepartmentsScreen');
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (_) => DepartmentScreen()),
+        (route) => false,
+  );
+
 }
 } else {
 showMessage("فشل في حفظ بيانات المستخدم");

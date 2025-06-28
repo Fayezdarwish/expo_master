@@ -28,6 +28,9 @@ class _SelectDepartmentScreenState extends State<SelectDepartmentScreen>
     {'id': 15, 'name': 'مجوهرات', 'icon': Icons.diamond},
   ];
 
+  List<Map<String, dynamic>> filteredDepartments = [];
+
+  final TextEditingController _searchController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _shakeAnimation;
   int? _shakingIndex;
@@ -35,6 +38,9 @@ class _SelectDepartmentScreenState extends State<SelectDepartmentScreen>
   @override
   void initState() {
     super.initState();
+    filteredDepartments = List.from(departments);
+
+    _searchController.addListener(_onSearchChanged);
 
     _animationController = AnimationController(
       vsync: this,
@@ -69,8 +75,22 @@ class _SelectDepartmentScreenState extends State<SelectDepartmentScreen>
     });
   }
 
+  void _onSearchChanged() {
+    final query = _searchController.text.trim();
+    setState(() {
+      if (query.isEmpty) {
+        filteredDepartments = List.from(departments);
+      } else {
+        filteredDepartments = departments
+            .where((d) => d['name'].toString().contains(query))
+            .toList();
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _searchController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -100,55 +120,86 @@ class _SelectDepartmentScreenState extends State<SelectDepartmentScreen>
         backgroundColor: const Color(0xFF4A90E2),
         elevation: 0,
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        itemCount: departments.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final department = departments[index];
-          final isShaking = _shakingIndex == index;
-
-          return AnimatedBuilder(
-            animation: _shakeAnimation,
-            builder: (context, child) {
-              final offsetX = isShaking ? _shakeAnimation.value : 0.0;
-              return Transform.translate(
-                offset: Offset(offsetX, 0),
-                child: child,
-              );
-            },
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              elevation: 3,
-              shadowColor: Colors.blue.shade100,
-              child: ListTile(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'ابحث عن قسم...',
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
                 contentPadding:
-                const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                leading: CircleAvatar(
-                  radius: 22,
-                  backgroundColor: const Color(0xFF4A90E2).withOpacity(0.2),
-                  child: Icon(
-                    department['icon'],
-                    color: const Color(0xFF4A90E2),
-                    size: 26,
-                  ),
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
                 ),
-                title: Text(
-                  department['name'],
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2C3E50),
-                  ),
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios,
-                    size: 18, color: Color(0xFF4A90E2)),
-                onTap: () => _onTapDepartment(index, department['id']),
               ),
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: filteredDepartments.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final department = filteredDepartments[index];
+                final isShaking =
+                    _shakingIndex != null &&
+                        departments.indexOf(department) == _shakingIndex;
+
+                return AnimatedBuilder(
+                  animation: _shakeAnimation,
+                  builder: (context, child) {
+                    final offsetX = isShaking ? _shakeAnimation.value : 0.0;
+                    return Transform.translate(
+                      offset: Offset(offsetX, 0),
+                      child: child,
+                    );
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 3,
+                    shadowColor: Colors.blue.shade100,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 20),
+                      leading: CircleAvatar(
+                        radius: 22,
+                        backgroundColor:
+                        const Color(0xFF4A90E2).withOpacity(0.2),
+                        child: Icon(
+                          department['icon'],
+                          color: const Color(0xFF4A90E2),
+                          size: 26,
+                        ),
+                      ),
+                      title: Text(
+                        department['name'],
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF2C3E50),
+                        ),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 18, color: Color(0xFF4A90E2)),
+                      onTap: () {
+                        final originalIndex =
+                        departments.indexOf(department);
+                        _onTapDepartment(originalIndex, department['id']);
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

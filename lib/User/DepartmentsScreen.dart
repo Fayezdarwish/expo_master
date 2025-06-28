@@ -1,143 +1,267 @@
+// import 'package:flutter/material.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'SectionsScreen.dart';
+//
+// class DepartmentScreen extends StatefulWidget {
+//   const DepartmentScreen({super.key});
+//
+//   @override
+//   State<DepartmentScreen> createState() => _DepartmentScreenState();
+// }
+//
+// class _DepartmentScreenState extends State<DepartmentScreen>
+//     with SingleTickerProviderStateMixin {
+//   final List<Map<String, dynamic>> departments = [
+//     {'id': 1, 'name': 'أغذية', 'icon': Icons.fastfood},
+//     {'id': 2, 'name': 'إلكترونيات', 'icon': Icons.devices},
+//     {'id': 3, 'name': 'جلود', 'icon': Icons.shopping_bag},
+//     {'id': 4, 'name': 'أقمشة', 'icon': Icons.style},
+//     {'id': 5, 'name': 'أثاث', 'icon': Icons.chair},
+//     {'id': 6, 'name': 'ألعاب', 'icon': Icons.toys},
+//     {'id': 7, 'name': 'عطور', 'icon': Icons.spa},
+//     {'id': 8, 'name': 'كتب', 'icon': Icons.book},
+//     {'id': 9, 'name': 'مفروشات', 'icon': Icons.bed},
+//     {'id': 10, 'name': 'منتجات طبية', 'icon': Icons.medical_services},
+//     {'id': 11, 'name': 'أدوات مكتبية', 'icon': Icons.create},
+//     {'id': 12, 'name': 'معدات صناعية', 'icon': Icons.build},
+//     {'id': 13, 'name': 'حرف يدوية', 'icon': Icons.handyman},
+//     {'id': 14, 'name': 'معدات زراعية', 'icon': Icons.grass},
+//     {'id': 15, 'name': 'مجوهرات', 'icon': Icons.diamond},
+//   ];
+//
+//   late AnimationController _animationController;
+//   late Animation<double> _shakeAnimation;
+//   int? _shakingIndex;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _animationController = AnimationController(
+//       vsync: this,
+//       duration: const Duration(milliseconds: 500),
+//     );
+//     _shakeAnimation = TweenSequence([
+//       TweenSequenceItem(tween: Tween(begin: 0.0, end: 6.0), weight: 1),
+//       TweenSequenceItem(tween: Tween(begin: 6.0, end: -6.0), weight: 2),
+//       TweenSequenceItem(tween: Tween(begin: -6.0, end: 0.0), weight: 1),
+//     ]).animate(_animationController);
+//
+//     _animationController.addStatusListener((status) {
+//       if (status == AnimationStatus.completed) {
+//         setState(() => _shakingIndex = null);
+//         _animationController.reset();
+//       }
+//     });
+//   }
+//
+//   @override
+//   void dispose() {
+//     _animationController.dispose();
+//     super.dispose();
+//   }
+//
+//   Future<void> _saveSelectedDepartmentId(int id) async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.setInt('selected_department_id', id);
+//   }
+//
+//   void _onTapDepartment(int index, int id, String name) async {
+//     setState(() => _shakingIndex = index);
+//     _animationController.forward();
+//     await Future.delayed(const Duration(milliseconds: 600));
+//     await _saveSelectedDepartmentId(id);
+//     if (!mounted) return;
+//
+//     // شرط خاص للإلكترونيات
+//     if (id == 2) {
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (_) => SectionsScreen(departmentId: id, departmentName: name),
+//         ),
+//       );
+//     } else {
+//       Navigator.pushNamed(context, '/exhibitor/submit-request', arguments: id);
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('اختر القسم')),
+//       body: ListView.separated(
+//         padding: const EdgeInsets.all(16),
+//         itemCount: departments.length,
+//         separatorBuilder: (_, __) => const SizedBox(height: 12),
+//         itemBuilder: (context, index) {
+//           final dept = departments[index];
+//           return AnimatedBuilder(
+//             animation: _shakeAnimation,
+//             builder: (context, child) {
+//               final offset = _shakingIndex == index ? _shakeAnimation.value : 0.0;
+//               return Transform.translate(offset: Offset(offset, 0), child: child);
+//             },
+//             child: Card(
+//               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+//               child: ListTile(
+//                 leading: CircleAvatar(
+//                   backgroundColor: Colors.blue.withOpacity(0.2),
+//                   child: Icon(dept['icon'], color: Colors.blue),
+//                 ),
+//                 title: Text(dept['name'], style: theme.textTheme.titleMedium),
+//                 trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.blue),
+//                 onTap: () => _onTapDepartment(index, dept['id'], dept['name']),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+// ✅ DepartmentScreen.dart
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
-import '../services/token_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'SectionsScreen.dart';
+import 'TicketPurchaseScreen.dart';
 
-class DepartmentsScreen extends StatefulWidget {
-  const DepartmentsScreen({super.key});
+class DepartmentScreen extends StatefulWidget {
+  const DepartmentScreen({super.key});
 
   @override
-  State<DepartmentsScreen> createState() => _DepartmentsScreenState();
+  State<DepartmentScreen> createState() => _DepartmentScreenState();
 }
 
-class _DepartmentsScreenState extends State<DepartmentsScreen> with SingleTickerProviderStateMixin {
-  List departments = [];
-  bool isLoading = true;
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
+class _DepartmentScreenState extends State<DepartmentScreen>
+    with SingleTickerProviderStateMixin {
+  final List<Map<String, dynamic>> departments = [
+    {'id': 1, 'name': 'أغذية', 'icon': Icons.fastfood},
+    {'id': 2, 'name': 'إلكترونيات', 'icon': Icons.devices},
+    {'id': 3, 'name': 'جلود', 'icon': Icons.shopping_bag},
+    {'id': 4, 'name': 'أقمشة', 'icon': Icons.style},
+    {'id': 5, 'name': 'أثاث', 'icon': Icons.chair},
+    {'id': 6, 'name': 'ألعاب', 'icon': Icons.toys},
+    {'id': 7, 'name': 'عطور', 'icon': Icons.spa},
+    {'id': 8, 'name': 'كتب', 'icon': Icons.book},
+    {'id': 9, 'name': 'مفروشات', 'icon': Icons.bed},
+    {'id': 10, 'name': 'منتجات طبية', 'icon': Icons.medical_services},
+    {'id': 11, 'name': 'أدوات مكتبية', 'icon': Icons.create},
+    {'id': 12, 'name': 'معدات صناعية', 'icon': Icons.build},
+    {'id': 13, 'name': 'حرف يدوية', 'icon': Icons.handyman},
+    {'id': 14, 'name': 'معدات زراعية', 'icon': Icons.grass},
+    {'id': 15, 'name': 'مجوهرات', 'icon': Icons.diamond},
+  ];
+
+  late AnimationController _animationController;
+  late Animation<double> _shakeAnimation;
+  int? _shakingIndex;
+
+  String searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    fetchDepartments();
-
-    _controller = AnimationController(
+    _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 500),
     );
-    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _shakeAnimation = TweenSequence([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 6.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 6.0, end: -6.0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: -6.0, end: 0.0), weight: 1),
+    ]).animate(_animationController);
+
+    _animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() => _shakingIndex = null);
+        _animationController.reset();
+      }
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
-  Future<void> fetchDepartments() async {
-    final token = await TokenStorage.getToken();
-    if (token == null) {
-      setState(() => isLoading = false);
-    }
-
-    final response = await ApiService.getWithToken('/visitor/departments', token ?? '');
-    if (response != null && response.statusCode == 200) {
-      setState(() {
-        departments = response.data['departments'];
-        isLoading = false;
-      });
-      _controller.forward();
-    } else {
-      setState(() => isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('فشل تحميل الأقسام')));
-    }
+  Future<void> _saveSelectedDepartmentId(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('selected_department_id', id);
   }
 
-  IconData _getIconForDepartment(String name) {
-    final lowerName = name.toLowerCase();
-    if (lowerName.contains('الكترونيات') || lowerName.contains('electronics')) {
-      return Icons.devices;
-    } else if (lowerName.contains('اغذية') || lowerName.contains('food')) {
-      return Icons.fastfood;
-    } else if (lowerName.contains('جلود')) {
-      return Icons.shopping_bag;
-    } else if (lowerName.contains('اقمشة')) {
-      return Icons.style;
-    } else if (lowerName.contains('اثاث') || lowerName.contains('furniture')) {
-      return Icons.chair;
-    } else if (lowerName.contains('العاب') || lowerName.contains('toys')) {
-      return Icons.toys;
-    } else if (lowerName.contains('عطور')) {
-      return Icons.spa;
-    } else if (lowerName.contains('كتب') || lowerName.contains('books')) {
-      return Icons.book;
-    } else if (lowerName.contains('مفروشات')) {
-      return Icons.bed;
-    } else if (lowerName.contains('طبية') || lowerName.contains('medical')) {
-      return Icons.medical_services;
-    } else if (lowerName.contains('مجوهرات')) {
-      return Icons.diamond;
+  void _onTapDepartment(int index, int id, String name) async {
+    setState(() => _shakingIndex = index);
+    _animationController.forward();
+    await Future.delayed(const Duration(milliseconds: 600));
+    await _saveSelectedDepartmentId(id);
+    if (!mounted) return;
+
+    if (id == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const TicketPreviewScreen(),
+        ),
+      );
+    } else {
+      Navigator.pushNamed(context, '/exhibitor/submit-request', arguments: id);
     }
-    return Icons.category;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final filtered = departments
+        .where((dept) => dept['name'].toString().contains(searchQuery))
+        .toList();
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: const Text('اختيار القسم'),
-        backgroundColor: const Color(0xFF4A90E2),
-        elevation: 0,
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : departments.isEmpty
-          ? const Center(child: Text('لا توجد أقسام', style: TextStyle(fontSize: 18)))
-          : FadeTransition(
-        opacity: _fadeAnimation,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-          itemCount: departments.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 16),
-          itemBuilder: (context, index) {
-            final dept = departments[index];
-            final icon = _getIconForDepartment(dept['name'] ?? '');
-            return Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-              shadowColor: Colors.blue.withOpacity(0.2),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                leading: CircleAvatar(
-                  radius: 22,
-                  backgroundColor: const Color(0xFF4A90E2).withOpacity(0.15),
-                  child: Icon(icon, color: const Color(0xFF4A90E2), size: 26),
-                ),
-                title: Text(
-                  dept['name'] ?? 'بدون اسم',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2C3E50),
-                  ),
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Color(0xFF4A90E2)),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SectionsScreen(
-                        departmentId: dept['id'],
-                        departmentName: dept['name'],
-                      ),
-                    ),
-                  );
-                },
+      appBar: AppBar(title: const Text('اختر القسم')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'ابحث عن قسم...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
-            );
-          },
-        ),
+              onChanged: (value) => setState(() => searchQuery = value),
+            ),
+          ),
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: filtered.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final dept = filtered[index];
+                return AnimatedBuilder(
+                  animation: _shakeAnimation,
+                  builder: (context, child) {
+                    final offset = _shakingIndex == index ? _shakeAnimation.value : 0.0;
+                    return Transform.translate(offset: Offset(offset, 0), child: child);
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blue.withOpacity(0.2),
+                        child: Icon(dept['icon'], color: Colors.blue),
+                      ),
+                      title: Text(dept['name'], style: theme.textTheme.titleMedium),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.blue),
+                      onTap: () => _onTapDepartment(index, dept['id'], dept['name']),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -64,65 +64,97 @@ class _RequestDetailsPageState extends State<RequestDetailsPage> {
         padding: const EdgeInsets.all(16.0),
         child: isProcessing
             ? const Center(child: CircularProgressIndicator())
-            : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(req['name']),
-                subtitle: Text(req['email']),
+            : SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // الجناح الوهمي: ساعات
+              Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: ListTile(
+                  leading: const Icon(Icons.watch,
+                      color: Colors.blueAccent),
+                  title: const Text(
+                    'جناح: ساعات',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  subtitle: const Text('اسم العارض: Esraa'),
+                  tileColor: const Color(0xFFEAF3FF),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: reasonController,
-              maxLines: 3,
-              decoration: InputDecoration(
-                labelText: 'سبب الرفض (اختياري)',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                prefixIcon: const Icon(Icons.note_alt_outlined),
+              const SizedBox(height: 16),
+
+              // معلومات المستخدم
+              Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: ListTile(
+                  leading: const Icon(Icons.person),
+                  title: Text(req['name']),
+                  subtitle: Text(req['email']),
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.check_circle_outline),
-                    label: const Text('قبول'),
-                    onPressed: acceptRequest,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 20),
+
+              // سبب الرفض
+              TextField(
+                controller: reasonController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  labelText: 'سبب الرفض (اختياري)',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.note_alt_outlined),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // أزرار القبول والرفض
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.check_circle_outline),
+                      label: const Text('قبول'),
+                      onPressed: acceptRequest,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding:
+                        const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.cancel_outlined),
-                    label: const Text('رفض'),
-                    onPressed: rejectRequest,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.cancel_outlined),
+                      label: const Text('رفض'),
+                      onPressed: rejectRequest,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        padding:
+                        const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
